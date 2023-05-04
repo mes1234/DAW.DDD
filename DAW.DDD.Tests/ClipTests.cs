@@ -13,12 +13,12 @@ public class ClipTests
         //Arrange & Act
 
         var midiEvent1 = SoundEvent.Create(1, 1, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(0));
-        var location1 = Location.Create(TimeSpan.FromSeconds(1));
+        var location1 = Location.Create(TimeSpan.FromSeconds(2));
 
         var pairsNotes1 = EventAtLocation<SoundEvent>.Create(location1, midiEvent1);
 
         var midiEvent2 = SoundEvent.Create(1, 1, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(0));
-        var location2 = Location.Create(TimeSpan.FromSeconds(2));
+        var location2 = Location.Create(TimeSpan.FromSeconds(1));
 
         var pairsNotes2 = EventAtLocation<SoundEvent>.Create(location2, midiEvent2);
 
@@ -30,8 +30,8 @@ public class ClipTests
 
         playableEvents.Should().HaveCount(2);
 
-        playableEvents.First().Event.First().Should().Be(midiEvent1);
-        playableEvents.Last().Event.First().Should().Be(midiEvent2);
+        playableEvents.First().Event.First().Should().Be(midiEvent2);
+        playableEvents.Last().Event.First().Should().Be(midiEvent1);
     }
 
     [Fact]

@@ -70,7 +70,7 @@ public class Clip : IEntity, IPlayable
             .Where(x => x.Location.Start < Length)
             .SelectMany(x => x.GetPlayableEvents(offset));
 
-        var groupedByLocation = allEvents.GroupBy(x => x.Location);
+        var groupedByLocation = allEvents.OrderBy(x => x.Location).GroupBy(x => x.Location);
 
         foreach (var group in groupedByLocation)
         {

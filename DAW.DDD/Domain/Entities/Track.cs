@@ -46,7 +46,7 @@ public class Track : IEntity, IPlayable
 
         var allEvents = _clips.SelectMany(x => x.GetPlayableEvents(offset));
 
-        var groupedByLocation = allEvents.GroupBy(x => x.Location);
+        var groupedByLocation = allEvents.OrderBy(x => x.Location).GroupBy(x => x.Location);
 
         foreach (var group in groupedByLocation)
         {
