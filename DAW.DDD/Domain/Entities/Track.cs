@@ -3,6 +3,7 @@ using DAW.DDD.Domain.Primitives;
 using DAW.DDD.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DAW.DDD.Domain.Entities;
@@ -36,9 +37,23 @@ public class Track : IEntity, IPlayable
         return new(id, clips, publisher);
     }
 
-    public IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> GetPlayableEvents()
+    public IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> GetPlayableEvents(Location offset)
     {
-        throw new NotImplementedException();
+        var result = new List<EventAtLocation<IReadOnlyCollection<SoundEvent>>>();
+
+        var allEvents = _clips.SelectMany(x => x.GetPlayableEvents(offset));
+
+        var groupedByLocation = allEvents.GroupBy(x => x.Location);
+
+        foreach (var group in groupedByLocation)
+        {
+            var events = group.SelectMany(x => x.Event);
+            var location = group.First().Location;
+
+            result.Add(EventAtLocation<IReadOnlyCollection<SoundEvent>>.Create(location, events.ToList()));
+        }
+
+        return result;
     }
 }
 

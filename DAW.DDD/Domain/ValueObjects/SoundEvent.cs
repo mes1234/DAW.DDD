@@ -6,13 +6,13 @@ using System.Text;
 
 namespace DAW.DDD.Domain.ValueObjects;
 
-public class SoundEvent : IPlayable
+public record SoundEvent : IPlayable
 {
     public int Velocity { get; private set; }
     public int Pitch { get; private set; }
-    public DateTimeOffset Length { get; private set; }
-    public DateTimeOffset Offset { get; private set; }
-    protected SoundEvent(int velocity, int pitch, DateTimeOffset length, DateTimeOffset offset)
+    public TimeSpan Length { get; private set; }
+    public TimeSpan Offset { get; private set; }
+    protected SoundEvent(int velocity, int pitch, TimeSpan length, TimeSpan offset)
     {
         ChangeVelocity(velocity);
         ChangePitch(pitch);
@@ -29,23 +29,29 @@ public class SoundEvent : IPlayable
         Pitch = pitch;
         return this;
     }
-    public SoundEvent ChangeLength(DateTimeOffset length)
+    public SoundEvent ChangeLength(TimeSpan length)
     {
         Length = length;
         return this;
     }
-    public SoundEvent ChangeOffset(DateTimeOffset offset)
+    public SoundEvent ChangeOffset(TimeSpan offset)
     {
         Offset = offset;
         return this;
     }
-    public static SoundEvent Create(int velocity, int pitch, DateTimeOffset length, DateTimeOffset offset)
+    public static SoundEvent Create(int velocity, int pitch, TimeSpan length, TimeSpan offset)
     {
         return new(velocity, pitch, length, offset);
     }
 
-    public IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> GetPlayableEvents()
+    public IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> GetPlayableEvents(Location offset)
     {
-        throw new NotImplementedException();
+        return new List<EventAtLocation<IReadOnlyCollection<SoundEvent>>>
+        {
+            EventAtLocation<IReadOnlyCollection<SoundEvent>>.Create(offset, new List<SoundEvent>
+            {
+                this
+            })
+        };
     }
 }

@@ -5,11 +5,13 @@ using System.Text;
 
 namespace DAW.DDD.Domain.ValueObjects;
 
-public class Location : IComparable<Location>
+public record Location : IComparable<Location>
 {
-    public DateTimeOffset Start { get; private set; }
+    public static readonly Location EmptyLocation = new Location(TimeSpan.FromSeconds(0), true);
+
+    public TimeSpan Start { get; private set; }
     public bool Active { get; private set; }
-    protected Location(DateTimeOffset start, bool active)
+    protected Location(TimeSpan start, bool active)
     {
         ChangeStart(start);
 
@@ -18,7 +20,7 @@ public class Location : IComparable<Location>
         else
             Deactivate();
     }
-    public Location ChangeStart(DateTimeOffset start)
+    public Location ChangeStart(TimeSpan start)
     {
         Start = start;
         return this;
@@ -33,65 +35,20 @@ public class Location : IComparable<Location>
         Active = false;
         return this;
     }
-    public static Location Create(DateTimeOffset start, bool active)
+    public static Location Create(TimeSpan start, bool active)
     {
         return new(start, active);
+    }
+    public static Location Create(TimeSpan start)
+    {
+        return new(start, true);
     }
 
     public int CompareTo(Location other) => Start.CompareTo(other.Start);
 
-    public override bool Equals(object obj)
+    public static Location operator +(Location lhs, Location rhs)
     {
-        if (ReferenceEquals(this, obj))
-        {
-            return true;
-        }
-
-        if (ReferenceEquals(obj, null))
-        {
-            return false;
-        }
-
-        throw new NotImplementedException();
+        return Create(lhs.Start + rhs.Start, lhs.Active || rhs.Active);
     }
 
-    public override int GetHashCode()
-    {
-        throw new NotImplementedException();
-    }
-
-    public static bool operator ==(Location left, Location right)
-    {
-        if (ReferenceEquals(left, null))
-        {
-            return ReferenceEquals(right, null);
-        }
-
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(Location left, Location right)
-    {
-        return !(left == right);
-    }
-
-    public static bool operator <(Location left, Location right)
-    {
-        return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
-    }
-
-    public static bool operator <=(Location left, Location right)
-    {
-        return ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
-    }
-
-    public static bool operator >(Location left, Location right)
-    {
-        return !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
-    }
-
-    public static bool operator >=(Location left, Location right)
-    {
-        return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
-    }
 }

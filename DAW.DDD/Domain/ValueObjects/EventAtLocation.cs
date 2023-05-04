@@ -1,11 +1,14 @@
-﻿using DAW.DDD.Domain.Notifications;
+﻿using DAW.DDD.Domain.Entities;
+using DAW.DDD.Domain.Notifications;
+using DAW.DDD.Domain.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DAW.DDD.Domain.ValueObjects;
 
-public class EventAtLocation<T> : IComparable<T>
+public record EventAtLocation<T> : IComparable<T>, IPlayable
 {
     public Location Location { get; private set; }
     public T Event { get; private set; }
@@ -39,58 +42,14 @@ public class EventAtLocation<T> : IComparable<T>
     public int CompareTo(T? other) => 0;
 #nullable disable
 
-    public override bool Equals(object obj)
+
+    public IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> GetPlayableEvents(Location offset)
     {
-        if (ReferenceEquals(this, obj))
+        if (Event is IPlayable playable)
         {
-            return true;
+            return playable.GetPlayableEvents(Location + offset);
         }
 
-        if (ReferenceEquals(obj, null))
-        {
-            return false;
-        }
-
-        throw new NotImplementedException();
-    }
-
-    public override int GetHashCode()
-    {
-        throw new NotImplementedException();
-    }
-
-    public static bool operator ==(EventAtLocation<T> left, EventAtLocation<T> right)
-    {
-        if (ReferenceEquals(left, null))
-        {
-            return ReferenceEquals(right, null);
-        }
-
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(EventAtLocation<T> left, EventAtLocation<T> right)
-    {
-        return !(left == right);
-    }
-
-    public static bool operator <(EventAtLocation<T> left, EventAtLocation<T> right)
-    {
-        return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
-    }
-
-    public static bool operator <=(EventAtLocation<T> left, EventAtLocation<T> right)
-    {
-        return ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
-    }
-
-    public static bool operator >(EventAtLocation<T> left, EventAtLocation<T> right)
-    {
-        return !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
-    }
-
-    public static bool operator >=(EventAtLocation<T> left, EventAtLocation<T> right)
-    {
-        return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
+        return new List<EventAtLocation<IReadOnlyCollection<SoundEvent>>>();
     }
 }
