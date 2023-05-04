@@ -45,7 +45,7 @@ public record EventAtLocation<T> : IComparable<T>, IPlayable
 
     public IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> GetPlayableEvents(Location offset)
     {
-        if (Event is IPlayable playable)
+        if (Event is IPlayable playable && Location.Active)
         {
             return playable.GetPlayableEvents(Location + offset);
         }
