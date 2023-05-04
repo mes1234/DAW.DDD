@@ -5,11 +5,21 @@ using System.Text;
 
 namespace DAW.DDD.Domain.ValueObjects;
 
+/// <summary>
+/// Location represents occurrence wrt. some container Clip/Track etc.
+/// </summary>
 public record Location : IComparable<Location>
 {
     public static readonly Location EmptyLocation = new Location(TimeSpan.FromSeconds(0), true);
 
+    /// <summary>
+    /// Defines when event occurred assuming T=0 is beginning of container (Clip/Track) 
+    /// </summary>
     public TimeSpan Start { get; private set; }
+
+    /// <summary>
+    /// Defines if given event should be collected for playback
+    /// </summary>
     public bool Active { get; private set; }
     protected Location(TimeSpan start, bool active)
     {

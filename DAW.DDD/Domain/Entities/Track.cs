@@ -8,31 +8,34 @@ using System.Text;
 
 namespace DAW.DDD.Domain.Entities;
 
+/// <summary>
+/// Track represents container for Clips
+/// </summary>
 public class Track : IEntity, IPlayable
 {
-    private readonly ICollection<EventAtLocation<ClipEvent>> _clips = new List<EventAtLocation<ClipEvent>>();
-    public IReadOnlyCollection<EventAtLocation<ClipEvent>> Clips => (IReadOnlyCollection<EventAtLocation<ClipEvent>>)_clips;
+    private readonly ICollection<EventAtLocation<Clip>> _clips = new List<EventAtLocation<Clip>>();
+    public IReadOnlyCollection<EventAtLocation<Clip>> Clips => (IReadOnlyCollection<EventAtLocation<Clip>>)_clips;
 
     public Guid Id { get; private set; }
 
     private readonly INotificationPublisher _publisher;
-    protected Track(Guid id, ICollection<EventAtLocation<ClipEvent>> clips, INotificationPublisher publisher)
+    protected Track(Guid id, ICollection<EventAtLocation<Clip>> clips, INotificationPublisher publisher)
     {
         Id = id;
         _publisher = publisher ?? NullNotificationPublisher.Instance;
         this.AddTracks(clips);
     }
-    public Track AddClip(EventAtLocation<ClipEvent> clip)
+    public Track AddClip(EventAtLocation<Clip> clip)
     {
         _clips.Add(clip);
         return this;
     }
 
-    public static Track Create(ICollection<EventAtLocation<ClipEvent>> clips, INotificationPublisher publisher)
+    public static Track Create(ICollection<EventAtLocation<Clip>> clips, INotificationPublisher publisher)
     {
         return new(Guid.NewGuid(), clips, publisher);
     }
-    public static Track Create(Guid id, ICollection<EventAtLocation<ClipEvent>> clips, INotificationPublisher publisher)
+    public static Track Create(Guid id, ICollection<EventAtLocation<Clip>> clips, INotificationPublisher publisher)
     {
         return new(id, clips, publisher);
     }
@@ -59,7 +62,7 @@ public class Track : IEntity, IPlayable
 
 public static class TrackExtensions
 {
-    public static Track AddTracks(this Track track, ICollection<EventAtLocation<ClipEvent>> clips)
+    public static Track AddTracks(this Track track, ICollection<EventAtLocation<Clip>> clips)
     {
         foreach (var clip in clips)
         {
