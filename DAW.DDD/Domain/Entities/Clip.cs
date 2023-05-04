@@ -16,7 +16,15 @@ public class Clip : IEntity, IPlayable
 {
     private readonly ICollection<EventAtLocation<SoundEvent>> _sounds = new List<EventAtLocation<SoundEvent>>();
     public IReadOnlyCollection<EventAtLocation<SoundEvent>> Sounds => (IReadOnlyCollection<EventAtLocation<SoundEvent>>)_sounds;
+
+    /// <summary>
+    /// Defines active length of clip, no events started after Length will be played
+    /// </summary>
     public TimeSpan Length { get; private set; }
+
+    /// <summary>
+    /// Defines reference of data source associated with given clip pre processors/synth/pads etc.
+    /// </summary>
     public Guid SourceId { get; private set; }
     public Guid Id { get; private set; }
 
