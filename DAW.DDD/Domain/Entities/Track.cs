@@ -1,4 +1,5 @@
 ﻿using DAW.DDD.Domain.Notifications;
+using DAW.DDD.Domain.Notifications.Tracks;
 using DAW.DDD.Domain.Primitives;
 using DAW.DDD.Domain.ValueObjects;
 using System;
@@ -18,26 +19,32 @@ public class Track : IEntity, IPlayable
 
     public Guid Id { get; private set; }
 
+    public Guid SourceId { get; private set; } = Guid.Empty;
+
     private readonly INotificationPublisher _publisher;
-    protected Track(Guid id, ICollection<EventAtLocation<Clip>> clips, INotificationPublisher publisher)
+    protected Track(Guid id, INotificationPublisher publisher)
     {
         Id = id;
         _publisher = publisher ?? NullNotificationPublisher.Instance;
-        this.AddTracks(clips);
+
+        _publisher.Publish(this.CreateTrackCreatedNotification());
     }
     public Track AddClip(EventAtLocation<Clip> clip)
     {
         _clips.Add(clip);
+
+        _publisher.Publish(this.CreateClipAddedToTrackNotification(clip));
+
         return this;
     }
 
     public static Track Create(ICollection<EventAtLocation<Clip>> clips, INotificationPublisher publisher)
     {
-        return new(Guid.NewGuid(), clips, publisher);
-    }
-    public static Track Create(Guid id, ICollection<EventAtLocation<Clip>> clips, INotificationPublisher publisher)
-    {
-        return new(id, clips, publisher);
+        var newTrack = new Track(Guid.NewGuid(), publisher);
+
+        newTrack.AddClips(clips);
+
+        return newTrack;
     }
 
     public IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> GetPlayableEvents(Location offset)
@@ -62,7 +69,7 @@ public class Track : IEntity, IPlayable
 
 public static class TrackExtensions
 {
-    public static Track AddTracks(this Track track, ICollection<EventAtLocation<Clip>> clips)
+    public static Track AddClips(this Track track, ICollection<EventAtLocation<Clip>> clips)
     {
         foreach (var clip in clips)
         {
@@ -71,4 +78,6 @@ public static class TrackExtensions
 
         return track;
     }
+    public static TrackCreatedNotification CreateTrackCreatedNotification(this Track track) => new(track.Id, track.Id.ToString(), track);
+    public static ClipAddedToTrackNotification CreateClipAddedToTrackNotification(this Track track, EventAtLocation<Clip> clip) => new(track.Id, track.Id.ToString(), clip);
 }

@@ -1,4 +1,6 @@
 ﻿using DAW.DDD.Domain.Notifications;
+using DAW.DDD.Domain.Notifications.Clips;
+using DAW.DDD.Domain.Notifications.Tracks;
 using DAW.DDD.Domain.Primitives;
 using DAW.DDD.Domain.ValueObjects;
 using System;
@@ -29,37 +31,42 @@ public class Clip : IEntity, IPlayable
     public Guid Id { get; private set; }
 
     private readonly INotificationPublisher _publisher;
-    protected Clip(Guid id, ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, Guid sourceId, INotificationPublisher publisher)
+    protected Clip(Guid id, INotificationPublisher publisher)
     {
         Id = id;
         _publisher = publisher ?? NullNotificationPublisher.Instance;
-        this.AddSounds(sounds);
-        ChangeLength(length);
-        ChangeSourceId(sourceId);
+
+        _publisher.Publish(this.CreateClipCreatedNotification());
+
+
     }
     public Clip AddSound(EventAtLocation<SoundEvent> sound)
     {
         _sounds.Add(sound);
+        _publisher.Publish(this.CreateAddSoundToClipNotification(sound));
         return this;
     }
-
     public Clip ChangeLength(TimeSpan length)
     {
         Length = length;
+        _publisher.Publish(this.CreateChangeLengthOfClipNotification(length));
         return this;
     }
     public Clip ChangeSourceId(Guid sourceId)
     {
         SourceId = sourceId;
+        _publisher.Publish(this.CreateChangeSourceIdOfClipNotification(sourceId));
         return this;
     }
     public static Clip Create(ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, Guid sourceId, INotificationPublisher publisher)
     {
-        return new(Guid.NewGuid(), sounds, length, sourceId, publisher);
-    }
-    public static Clip Create(Guid id, ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, Guid sourceId, INotificationPublisher publisher)
-    {
-        return new(id, sounds, length, sourceId, publisher);
+        var newClip = new Clip(Guid.NewGuid(), publisher);
+
+        newClip.AddSounds(sounds);
+        newClip.ChangeLength(length);
+        newClip.ChangeSourceId(sourceId);
+
+        return newClip;
     }
 
     public IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> GetPlayableEvents(Location offset)
@@ -94,4 +101,8 @@ public static class ClipEventExtensions
         }
         return clipEvent;
     }
+    public static ClipCreatedNotification CreateClipCreatedNotification(this Clip clip) => new(clip.Id, clip.Id.ToString(), clip);
+    public static AddSoundToClipNotification CreateAddSoundToClipNotification(this Clip clip, EventAtLocation<SoundEvent> sound) => new(clip.Id, clip.Id.ToString(), sound);
+    public static ChangeLengthOfClipNotification CreateChangeLengthOfClipNotification(this Clip clip, TimeSpan length) => new(clip.Id, clip.Id.ToString(), length);
+    public static ChangeSourceIdOfClipNotification CreateChangeSourceIdOfClipNotification(this Clip clip, Guid sourceId) => new(clip.Id, clip.Id.ToString(), sourceId);
 }
