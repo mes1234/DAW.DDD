@@ -30,7 +30,7 @@ public class Clip : IEntity, IPlayable
     public Guid SourceId { get; private set; }
     public Guid Id { get; private set; }
 
-    private readonly INotificationPublisher _publisher;
+    private INotificationPublisher _publisher;
     protected Clip(Guid id, INotificationPublisher publisher)
     {
         Id = id;
@@ -88,6 +88,11 @@ public class Clip : IEntity, IPlayable
         }
 
         return result;
+    }
+
+    public void Activate(INotificationPublisher notificationPublisher)
+    {
+        _publisher = notificationPublisher;
     }
 }
 

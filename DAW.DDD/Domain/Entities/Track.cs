@@ -21,7 +21,7 @@ public class Track : IEntity, IPlayable
 
     public Guid SourceId { get; private set; } = Guid.Empty;
 
-    private readonly INotificationPublisher _publisher;
+    private INotificationPublisher _publisher;
     protected Track(Guid id, INotificationPublisher publisher)
     {
         Id = id;
@@ -64,6 +64,11 @@ public class Track : IEntity, IPlayable
         }
 
         return result;
+    }
+
+    public void Activate(INotificationPublisher notificationPublisher)
+    {
+        _publisher = notificationPublisher;
     }
 }
 
