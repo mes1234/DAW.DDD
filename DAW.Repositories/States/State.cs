@@ -1,4 +1,9 @@
-﻿namespace DAW.Repositories.States;
+﻿using DAW.DDD.Domain.Entities;
+using DAW.DDD.Domain.Notifications;
+using DAW.DDD.Domain.Primitives;
+using DAW.DDD.Domain.ValueObjects;
+
+namespace DAW.Repositories.States;
 
 /// <summary>
 /// Represents Clip in storage only POCO should exist here
@@ -66,4 +71,12 @@ public record SoundEventState
     /// Defines artificial when to assume note was playing eg. crop of audio beginning
     /// </summary>
     public TimeSpan Offset { get; set; }
+}
+
+public class TrackState
+{
+    public ICollection<EventAtLocationState<Guid>> Clips { get; set; } = new List<EventAtLocationState<Guid>>();
+    public Guid Id { get; set; }
+    public Guid SourceId { get; set; } = Guid.Empty;
+
 }

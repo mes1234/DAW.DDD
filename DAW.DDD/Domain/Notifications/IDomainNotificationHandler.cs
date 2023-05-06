@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAW.Repositories.DataAccess;
-internal interface IDomainNotificationHandler<in T> where T : DomainNotification
+namespace DAW.DDD.Domain.Notifications;
+public interface IDomainNotificationHandler<in T> where T : DomainNotification
 {
     Task Handle(T notification);
 }
