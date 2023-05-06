@@ -30,3 +30,9 @@ internal static class StateExtensions
         return Clip.Create(clipState.Sounds.ToModel(), clipState.Length, clipState.SourceId, NullNotificationPublisher.Instance);
     }
 }
+
+internal interface IToModel
+{
+    void ToModel();
+
+}

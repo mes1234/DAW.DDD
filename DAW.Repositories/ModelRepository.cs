@@ -7,12 +7,12 @@ using DAW.Repositories.States;
 using System.Collections.Concurrent;
 
 namespace DAW.Repositories;
-public class ClipsRepository
+public class ModelRepository
 {
     private readonly IModelStateProvider<ClipState> _clipStateProvider;
     private readonly INotificationPublisher _notificationPublisher;
 
-    public ClipsRepository(IModelStateProvider<ClipState> clipStateProvider, INotificationPublisher notificationPublisher)
+    public ModelRepository(IModelStateProvider<ClipState> clipStateProvider, INotificationPublisher notificationPublisher)
     {
         _clipStateProvider = clipStateProvider;
         _notificationPublisher = notificationPublisher;
