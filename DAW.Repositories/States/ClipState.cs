@@ -32,12 +32,12 @@ public record LocationState
     /// <summary>
     /// Defines when event occurred assuming T=0 is beginning of container (Clip/Track) 
     /// </summary>
-    public TimeSpan Start { get; private set; }
+    public TimeSpan Start { get; set; }
 
     /// <summary>
     /// Defines if given event should be collected for playback
     /// </summary>
-    public bool Active { get; private set; }
+    public bool Active { get; set; }
 }
 
 /// <summary>
