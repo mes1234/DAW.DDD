@@ -23,7 +23,7 @@ internal class ClipsCommandsHandlers :
         _stateWriter = stateWriter;
     }
 
-    public Task Handle(ClipCreatedNotification notification)
+    public async Task Handle(ClipCreatedNotification notification)
     {
         var newClip = new ClipState
         {
@@ -31,9 +31,7 @@ internal class ClipsCommandsHandlers :
             SourceId = notification.SourceId,
         };
 
-        _stateWriter.TryAdd(notification.EntityId, newClip);
-
-        return Task.CompletedTask;
+        await _stateWriter.TryAddOrUpdate(notification.EntityId, newClip);
     }
 
     public async Task Handle(AddSoundToClipNotification notification)
@@ -59,6 +57,8 @@ internal class ClipsCommandsHandlers :
         };
 
         clipState.Sounds.Add(newSound);
+
+        await _stateWriter.TryAddOrUpdate(notification.EntityId, clipState);
     }
 
     public async Task Handle(ChangeLengthOfClipNotification notification)
@@ -68,6 +68,8 @@ internal class ClipsCommandsHandlers :
         if (clipState == null) return;
 
         clipState.Length = notification.Length;
+
+        await _stateWriter.TryAddOrUpdate(notification.EntityId, clipState);
     }
 
     public async Task Handle(ChangeSourceIdOfClipNotification notification)
@@ -77,5 +79,7 @@ internal class ClipsCommandsHandlers :
         if (clipState == null) return;
 
         clipState.SourceId = notification.SourceId;
+
+        await _stateWriter.TryAddOrUpdate(notification.EntityId, clipState);
     }
 }

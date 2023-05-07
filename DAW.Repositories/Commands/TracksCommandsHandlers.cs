@@ -22,7 +22,7 @@ internal class TracksCommandsHandlers :
         _stateWriter = stateWriter;
     }
 
-    public Task Handle(TrackCreatedNotification notification)
+    public async Task Handle(TrackCreatedNotification notification)
     {
         var newTrack = new TrackState
         {
@@ -30,9 +30,7 @@ internal class TracksCommandsHandlers :
             SourceId = notification.SourceId,
         };
 
-        _stateWriter.TryAdd(notification.EntityId, newTrack);
-
-        return Task.CompletedTask;
+        await _stateWriter.TryAddOrUpdate(notification.EntityId, newTrack);
     }
 
     public async Task Handle(ClipAddedToTrackNotification notification)
@@ -52,5 +50,7 @@ internal class TracksCommandsHandlers :
         };
 
         trackState.Clips.Add(newClip);
+
+        await _stateWriter.TryAddOrUpdate(notification.EntityId, trackState);
     }
 }

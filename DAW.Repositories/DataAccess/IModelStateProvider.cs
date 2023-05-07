@@ -7,6 +7,6 @@ public interface IModelStateReader<T>
 
 public interface IModelStateWriter<in T>
 {
-    public Task TryAdd(Guid id, T value);
+    public Task TryAddOrUpdate(Guid id, T value);
 }
 

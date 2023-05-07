@@ -12,15 +12,16 @@ internal class InMemoryStorage<T> : IModelStateReader<T>, IModelStateWriter<T> w
     private const int DbDelay = 100;
 
     private readonly ConcurrentDictionary<Guid, T> _storage = new ConcurrentDictionary<Guid, T>();
-    public async Task TryAdd(Guid id, T value)
+    public async Task TryAddOrUpdate(Guid id, T value)
     {
         await Task.Delay(DbDelay);
 
-        _storage.TryAdd(id, value);
+        _storage.AddOrUpdate(id, value, (key, oldValue) => value);
     }
 
     public async Task<T?> TryGet(Guid id)
     {
+        // Simulate some delay
         await Task.Delay(DbDelay);
 
         if (_storage.TryGetValue(id, out var clip))
