@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAW.DDD", "DAW.DDD\DAW.DDD.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAW.DDD.Tests", "DAW.DDD.Tests\DAW.DDD.Tests.csproj", "{96DC5242-A07C-4AB5-912F-EE6AB180EF67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAW.Repositories", "DAW.Repositories\DAW.Repositories.csproj", "{217A14EC-5927-4425-B548-335C854C3A81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAW.Repositories", "DAW.Repositories\DAW.Repositories.csproj", "{217A14EC-5927-4425-B548-335C854C3A81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAW.Repositories.Tests", "DAW.Repositories.Tests\DAW.Repositories.Tests.csproj", "{117E1090-1152-4A65-B826-C4BFC8916033}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{217A14EC-5927-4425-B548-335C854C3A81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{217A14EC-5927-4425-B548-335C854C3A81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{217A14EC-5927-4425-B548-335C854C3A81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{117E1090-1152-4A65-B826-C4BFC8916033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{117E1090-1152-4A65-B826-C4BFC8916033}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{117E1090-1152-4A65-B826-C4BFC8916033}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{117E1090-1152-4A65-B826-C4BFC8916033}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
