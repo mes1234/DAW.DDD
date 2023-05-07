@@ -56,6 +56,7 @@ public class ModelRepository
         return model;
     }
 
+    // TODO refactor this to more generic async linq usage
     private async Task<IEnumerable<Clip>> GetClips(IEnumerable<Guid> ids)
     {
         var clips = new List<Clip>();
