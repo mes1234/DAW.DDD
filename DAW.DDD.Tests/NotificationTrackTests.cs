@@ -46,11 +46,11 @@ public class NotificationTrackTests
         var pairsClip1 = EventAtLocation<Clip>.Create(clip1Location, clip1);
         var clip2Location = Location.Create(TimeSpan.FromSeconds(10));
         var pairsClip2 = EventAtLocation<Clip>.Create(clip2Location, clip2);
-        _ = Track.Create(new List<EventAtLocation<Clip>> { pairsClip1, pairsClip2 }, notificationPublisher);
+        _ = Track.Create(new List<EventAtLocation<Clip>> { pairsClip1, pairsClip2 }, Guid.NewGuid(), notificationPublisher);
 
 
         // Act
-        notificationPublisher.NotificationCount.Should().Be(13);
+        notificationPublisher.NotificationCount.Should().Be(14);
         //Assert
 
     }

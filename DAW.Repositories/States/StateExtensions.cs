@@ -27,7 +27,7 @@ internal static class StateExtensions
 
     public static Clip ToModel(this ClipState state)
     {
-        return Clip.Create(state.Sounds.Select(x => x.ToModel()).ToList(), state.Length, state.SourceId, NullNotificationPublisher.Instance);
+        return Clip.Create(state.Id, state.Sounds.Select(x => x.ToModel()).ToList(), state.Length, state.SourceId, NullNotificationPublisher.Instance);
     }
 
     public static Track ToModel(this TrackState state, IEnumerable<Clip> clips)
@@ -43,6 +43,6 @@ internal static class StateExtensions
                     clips.First(x => x.Id == clipState.Event)));
         }
 
-        return Track.Create(clipsAtLocations, NullNotificationPublisher.Instance);
+        return Track.Create(state.Id, clipsAtLocations, state.SourceId, NullNotificationPublisher.Instance);
     }
 }

@@ -58,9 +58,11 @@ public class Clip : IEntity, IPlayable
         _publisher.Publish(this.CreateChangeSourceIdOfClipNotification(sourceId));
         return this;
     }
-    public static Clip Create(ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, Guid sourceId, INotificationPublisher publisher)
+    public static Clip Create(ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, Guid sourceId, INotificationPublisher publisher) => Create(Guid.NewGuid(), sounds, length, sourceId, publisher);
+
+    public static Clip Create(Guid id, ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, Guid sourceId, INotificationPublisher publisher)
     {
-        var newClip = new Clip(Guid.NewGuid(), publisher);
+        var newClip = new Clip(id, publisher);
 
         newClip.AddSounds(sounds);
         newClip.ChangeLength(length);

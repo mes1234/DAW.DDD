@@ -11,7 +11,8 @@ namespace DAW.Repositories.Commands;
 /// </summary>
 internal class TracksCommandsHandlers :
     IDomainNotificationHandler<TrackCreatedNotification>,
-    IDomainNotificationHandler<ClipAddedToTrackNotification>
+    IDomainNotificationHandler<ClipAddedToTrackNotification>,
+    IDomainNotificationHandler<ChangeTrackSourceIdNotification>
 {
     private readonly IModelStateReader<TrackState> _stateReader;
     private readonly IModelStateWriter<TrackState> _stateWriter;
@@ -50,6 +51,17 @@ internal class TracksCommandsHandlers :
         };
 
         trackState.Clips.Add(newClip);
+
+        await _stateWriter.TryAddOrUpdate(notification.EntityId, trackState);
+    }
+
+    public async Task Handle(ChangeTrackSourceIdNotification notification)
+    {
+        var trackState = await _stateReader.TryGet(notification.EntityId);
+
+        if (trackState == null) return;
+
+        trackState.SourceId = notification.SourceId;
 
         await _stateWriter.TryAddOrUpdate(notification.EntityId, trackState);
     }
