@@ -4,6 +4,7 @@ using DAW.DDD.Domain.Primitives;
 using DAW.DDD.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -34,15 +35,24 @@ public class Track : IEntity, IPlayable
         _clips.Add(clip);
 
         _publisher.Publish(this.CreateClipAddedToTrackNotification(clip));
+        return this;
+    }
+    public Track ChangeSourceId(Guid sourceId)
+    {
+        SourceId = sourceId;
 
+        _publisher.Publish(this.CreateChangeTrackSourceIdNotification(sourceId));
         return this;
     }
 
-    public static Track Create(ICollection<EventAtLocation<Clip>> clips, INotificationPublisher publisher)
+    public static Track Create(ICollection<EventAtLocation<Clip>> clips, Guid sourceId, INotificationPublisher publisher) => Create(Guid.NewGuid(), clips, sourceId, publisher);
+
+    public static Track Create(Guid id, ICollection<EventAtLocation<Clip>> clips, Guid sourceId, INotificationPublisher publisher)
     {
-        var newTrack = new Track(Guid.NewGuid(), publisher);
+        var newTrack = new Track(id, publisher);
 
         newTrack.AddClips(clips);
+        newTrack.ChangeSourceId(sourceId);
 
         return newTrack;
     }
@@ -85,4 +95,5 @@ public static class TrackExtensions
     }
     public static TrackCreatedNotification CreateTrackCreatedNotification(this Track track) => new(track.Id, track.Id.ToString(), track);
     public static ClipAddedToTrackNotification CreateClipAddedToTrackNotification(this Track track, EventAtLocation<Clip> clip) => new(track.Id, track.Id.ToString(), clip);
+    public static ChangeTrackSourceIdNotification CreateChangeTrackSourceIdNotification(this Track track, Guid sourceId) => new(track.Id, track.Id.ToString(), sourceId);
 }

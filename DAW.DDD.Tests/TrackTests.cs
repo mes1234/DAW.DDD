@@ -44,7 +44,7 @@ public class TrackTests
         var pairsClip1 = EventAtLocation<Clip>.Create(clip1Location, clip1);
         var clip2Location = Location.Create(TimeSpan.FromSeconds(10));
         var pairsClip2 = EventAtLocation<Clip>.Create(clip2Location, clip2);
-        var track1 = Track.Create(new List<EventAtLocation<Clip>> { pairsClip1, pairsClip2 }, NullNotificationPublisher.Instance);
+        var track1 = Track.Create(new List<EventAtLocation<Clip>> { pairsClip1, pairsClip2 }, Guid.NewGuid(), NullNotificationPublisher.Instance);
 
 
         // Act
@@ -101,7 +101,7 @@ public class TrackTests
         var pairsClip1 = EventAtLocation<Clip>.Create(clip1Location, clip1);
         var clip2Location = Location.Create(TimeSpan.FromSeconds(1));
         var pairsClip2 = EventAtLocation<Clip>.Create(clip2Location, clip2);
-        var track1 = Track.Create(new List<EventAtLocation<Clip>> { pairsClip1, pairsClip2 }, NullNotificationPublisher.Instance);
+        var track1 = Track.Create(new List<EventAtLocation<Clip>> { pairsClip1, pairsClip2 }, Guid.NewGuid(), NullNotificationPublisher.Instance);
 
 
         // Act
@@ -158,7 +158,7 @@ public class TrackTests
         var pairsClip1 = EventAtLocation<Clip>.Create(clip1Location, clip1);
         var clip2Location = Location.Create(TimeSpan.FromSeconds(1));
         var pairsClip2 = EventAtLocation<Clip>.Create(clip2Location, clip2);
-        var track1 = Track.Create(new List<EventAtLocation<Clip>> { pairsClip1, pairsClip2 }, NullNotificationPublisher.Instance);
+        var track1 = Track.Create(new List<EventAtLocation<Clip>> { pairsClip1, pairsClip2 }, Guid.NewGuid(), NullNotificationPublisher.Instance);
 
 
         // Act
