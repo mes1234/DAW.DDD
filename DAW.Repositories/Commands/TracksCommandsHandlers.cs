@@ -9,7 +9,7 @@ namespace DAW.Repositories.Commands;
 /// <summary>
 /// Represents simple in memory storage of data
 /// </summary>
-internal class TracksCommandsHandlers :
+public class TracksCommandsHandlers :
     IDomainNotificationHandler<TrackCreatedNotification>,
     IDomainNotificationHandler<ClipAddedToTrackNotification>,
     IDomainNotificationHandler<ChangeTrackSourceIdNotification>

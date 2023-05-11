@@ -8,7 +8,7 @@ namespace DAW.Repositories.Commands;
 /// <summary>
 /// Represents simple in memory storage of data
 /// </summary>
-internal class ClipsCommandsHandlers :
+public class ClipsCommandsHandlers :
     IDomainNotificationHandler<ClipCreatedNotification>,
     IDomainNotificationHandler<AddSoundToClipNotification>,
     IDomainNotificationHandler<ChangeLengthOfClipNotification>,
