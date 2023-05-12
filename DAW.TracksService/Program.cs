@@ -1,3 +1,4 @@
+using AutoMapper;
 using DAW.DDD.Domain.Entities;
 using DAW.DDD.Domain.Notifications;
 using DAW.DDD.Domain.Notifications.Clips;
@@ -9,7 +10,9 @@ using DAW.Repositories.DataAccess;
 using DAW.Repositories.Dtos;
 using DAW.Repositories.States;
 using DAW.TracksService.BackgroundWorkers;
+using DAW.TracksService.Dto;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +39,7 @@ builder.Services.AddTransient<IDomainNotificationHandler<ClipAddedToTrackNotific
 builder.Services.AddTransient<IDomainNotificationHandler<ChangeTrackSourceIdNotification>, TracksCommandsHandlers>();
 
 builder.Services.AddHostedService<DomainEventsDispatcher>();
+builder.Services.AddAutoMapper(typeof(Mappings));
 
 var app = builder.Build();
 
@@ -49,11 +53,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapPut("tracks", ([FromQuery] Guid sourceId, [FromQuery] string name, [FromServices] INotificationPublisher notificationPublisher) =>
+app.MapPut("tracks", ([FromQuery] Guid? sourceId, [FromQuery] string name, [FromServices] INotificationPublisher notificationPublisher) =>
 {
-    var track = Track.Create(Enumerable.Empty<EventAtLocation<Clip>>().ToList(), sourceId, notificationPublisher);
+    var track = Track.Create(Enumerable.Empty<EventAtLocation<Clip>>().ToList(), sourceId ?? Guid.Empty, notificationPublisher);
 
-    return Results.Created(new Uri($"https://localhost:7267/tracks/{track.Id}"), track.Id);
+    var response = new { trackId = track.Id };
+
+    return Results.Created(new Uri($"https://localhost:7267/tracks/{track.Id}"), response);
 
 }).WithName("PutNewTrack");
 
@@ -65,12 +71,15 @@ app.MapPut("tracks/{trackId}/clips", async ([FromRoute] Guid trackId, [FromQuery
 
     var clip = Clip.Create(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList(), TimeSpan.FromSeconds(lengthSec), Guid.Empty, notificationPublisher);
 
-    return Results.Created(new Uri($"https://localhost:7267/tracks/{trackId}/clips/{clip.Id}"), clip.Id);
+    track.AddClip(EventAtLocation<Clip>.Create(Location.Create(track.Length), clip));
+
+    var response = new { clipId = clip.Id };
+
+    return Results.Created(new Uri($"https://localhost:7267/tracks/{trackId}/clips/{clip.Id}"), response);
 
 }).WithName("PutNewClip");
 
-
-app.MapPut("tracks/{trackId}/clips/{clipId}/sounds", async ([FromRoute] Guid trackId, [FromRoute] Guid clipId, [FromBody] IEnumerable<EventAtLocationDto<SoundEventDto>> sounds, [FromServices] ModelRepository modelRepository, [FromServices] INotificationPublisher notificationPublisher) =>
+app.MapPut("tracks/{trackId}/clips/{clipId}/sounds", async ([FromRoute] Guid trackId, [FromRoute] Guid clipId, [FromBody] IEnumerable<EventAtLocationDto<SoundEventDto>> sounds, [FromServices] ModelRepository modelRepository, [FromServices] INotificationPublisher notificationPublisher, [FromServices] IMapper mapper) =>
 {
     var track = await modelRepository.GetTrack(trackId);
 
@@ -80,22 +89,24 @@ app.MapPut("tracks/{trackId}/clips/{clipId}/sounds", async ([FromRoute] Guid tra
 
     if (clip == null) return Results.BadRequest($"Clip {clipId} doesn't exist");
 
-    clip.Event.AddSounds(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList());
+    AddSounds(sounds, clip);
 
-    //Return DTO!!
-    return Results.Created(new Uri($"https://localhost:7267/playable/{trackId}/clips/{clipId}"), clip.GetPlayableEvents(Location.EmptyLocation));
+    var soundEvents = clip.GetPlayableEvents(Location.EmptyLocation);
+
+    var soundEventsMapped = MapPlayableEvents(mapper, soundEvents);
+
+    return Results.Created(new Uri($"https://localhost:7267/playable/{trackId}/clips/{clipId}"), (soundEventsMapped));
 
 }).WithName("PutSounds");
 
 
-app.MapGet("tracks/{id}", async ([FromRoute] Guid id, [FromServices] ModelRepository modelRepository) =>
+app.MapGet("tracks/{id}", async ([FromRoute] Guid id, [FromServices] ModelRepository modelRepository, [FromServices] IMapper mapper) =>
 {
     var track = await modelRepository.GetTrack(id);
 
     if (track != null)
     {
-        //TODO add mapper
-        return Results.Ok(new TrackDto());
+        return Results.Ok(mapper.Map<TrackDto>(track));
     }
     else
     {
@@ -103,14 +114,15 @@ app.MapGet("tracks/{id}", async ([FromRoute] Guid id, [FromServices] ModelReposi
     }
 }).WithName("GetTrackById");
 
-app.MapGet("playable/{trackId}", async ([FromRoute] Guid trackId, [FromServices] ModelRepository modelRepository) =>
+app.MapGet("playable/{trackId}", async ([FromRoute] Guid trackId, [FromServices] ModelRepository modelRepository, [FromServices] IMapper mapper) =>
 {
     var track = await modelRepository.GetTrack(trackId);
 
     if (track != null)
     {
-        //TODO add mapper
-        return Results.Ok(track.GetPlayableEvents(Location.EmptyLocation));
+        var sounds = track.GetPlayableEvents(Location.EmptyLocation);
+
+        return Results.Ok(MapPlayableEvents(mapper, sounds));
     }
     else
     {
@@ -119,7 +131,7 @@ app.MapGet("playable/{trackId}", async ([FromRoute] Guid trackId, [FromServices]
 }).WithName("GetTrackPlayable");
 
 
-app.MapGet("playable/{trackId}/clips/{clipId}", async ([FromRoute] Guid trackId, [FromRoute] Guid clipId, [FromServices] ModelRepository modelRepository) =>
+app.MapGet("playable/{trackId}/clips/{clipId}", async ([FromRoute] Guid trackId, [FromRoute] Guid clipId, [FromServices] ModelRepository modelRepository, [FromServices] IMapper mapper) =>
 {
     var track = await modelRepository.GetTrack(trackId);
 
@@ -129,8 +141,9 @@ app.MapGet("playable/{trackId}/clips/{clipId}", async ([FromRoute] Guid trackId,
 
         if (clip != null)
         {
-            //TODO add mapper
-            return Results.Ok(track.GetPlayableEvents(Location.EmptyLocation));
+            var sounds = clip.GetPlayableEvents(Location.EmptyLocation);
+
+            return Results.Ok(MapPlayableEvents(mapper, sounds));
         }
     }
 
@@ -141,3 +154,32 @@ app.MapGet("playable/{trackId}/clips/{clipId}", async ([FromRoute] Guid trackId,
 
 
 app.Run();
+
+static List<EventAtLocationDto<IEnumerable<SoundEventDto>>> MapPlayableEvents(IMapper mapper, IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> soundEvents)
+{
+    var soundEventsMapped = new List<EventAtLocationDto<IEnumerable<SoundEventDto>>>();
+
+    foreach (var soundEvent in soundEvents)
+    {
+        var mappedSoundEvent = mapper.Map<EventAtLocationDto<IEnumerable<SoundEventDto>>>(soundEvent);
+
+        soundEventsMapped.Add(mappedSoundEvent);
+    }
+
+    return soundEventsMapped;
+}
+
+static void AddSounds(IEnumerable<EventAtLocationDto<SoundEventDto>> sounds, EventAtLocation<Clip> clip)
+{
+    var soundsModel = new List<EventAtLocation<SoundEvent>>();
+
+    foreach (var sound in sounds)
+    {
+        soundsModel.Add(
+            EventAtLocation<SoundEvent>.Create(
+                Location.Create(TimeSpan.FromMilliseconds(sound.Location!.Start_ms), true),
+                SoundEvent.Create(sound.Event!.Velocity, sound.Event.Pitch, TimeSpan.FromMilliseconds(sound.Event.Length_ms), TimeSpan.FromMilliseconds(sound.Event.Offset_ms))));
+    }
+
+    clip.Event.AddSounds(soundsModel);
+}
