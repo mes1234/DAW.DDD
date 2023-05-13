@@ -11,8 +11,7 @@ namespace DAW.Repositories.Commands;
 public class ClipsCommandsHandlers :
     IDomainNotificationHandler<ClipCreatedNotification>,
     IDomainNotificationHandler<AddSoundToClipNotification>,
-    IDomainNotificationHandler<ChangeLengthOfClipNotification>,
-    IDomainNotificationHandler<ChangeSourceIdOfClipNotification>
+    IDomainNotificationHandler<ChangeLengthOfClipNotification>
 {
     private readonly IModelStateReader<ClipState> _stateReader;
     private readonly IModelStateWriter<ClipState> _stateWriter;
@@ -28,7 +27,6 @@ public class ClipsCommandsHandlers :
         var newClip = new ClipState
         {
             Id = notification.EntityId,
-            SourceId = notification.SourceId,
         };
 
         await _stateWriter.TryAddOrUpdate(notification.EntityId, newClip);
@@ -72,14 +70,4 @@ public class ClipsCommandsHandlers :
         await _stateWriter.TryAddOrUpdate(notification.EntityId, clipState);
     }
 
-    public async Task Handle(ChangeSourceIdOfClipNotification notification)
-    {
-        var clipState = await _stateReader.TryGet(notification.EntityId);
-
-        if (clipState == null) return;
-
-        clipState.SourceId = notification.SourceId;
-
-        await _stateWriter.TryAddOrUpdate(notification.EntityId, clipState);
-    }
 }

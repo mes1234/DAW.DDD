@@ -1,4 +1,4 @@
-﻿namespace DAW.Repositories.Dtos;
+﻿namespace DAW.Services.Dto;
 
 /// <summary>
 /// Represents Clip in storage only POCO should exist here

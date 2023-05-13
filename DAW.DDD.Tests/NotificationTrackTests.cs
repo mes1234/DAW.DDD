@@ -25,7 +25,7 @@ public class NotificationTrackTests
 
         var pairsNotes2 = EventAtLocation<SoundEvent>.Create(location2, midiEvent2);
 
-        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), Guid.Empty, notificationPublisher);
+        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), notificationPublisher);
 
         // Clip 2
         var midiEvent3 = SoundEvent.Create(3, 3, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(0));
@@ -38,7 +38,7 @@ public class NotificationTrackTests
 
         var pairsNotes4 = EventAtLocation<SoundEvent>.Create(location4, midiEvent4);
 
-        var clip2 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes3, pairsNotes4 }, TimeSpan.FromSeconds(10), Guid.Empty, notificationPublisher);
+        var clip2 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes3, pairsNotes4 }, TimeSpan.FromSeconds(10), notificationPublisher);
 
         // Track1
 
@@ -50,7 +50,7 @@ public class NotificationTrackTests
 
 
         // Act
-        notificationPublisher.NotificationCount.Should().Be(14);
+        notificationPublisher.NotificationCount.Should().Be(12);
         //Assert
 
     }

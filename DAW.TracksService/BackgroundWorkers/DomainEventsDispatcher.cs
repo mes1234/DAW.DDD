@@ -34,7 +34,6 @@ public class DomainEventsDispatcher : BackgroundService
                 ClipCreatedNotification casted => _serviceProvider.GetService<IDomainNotificationHandler<ClipCreatedNotification>>()!.Handle(casted!),
                 AddSoundToClipNotification casted => _serviceProvider.GetService<IDomainNotificationHandler<AddSoundToClipNotification>>()!.Handle(casted!),
                 ChangeLengthOfClipNotification casted => _serviceProvider.GetService<IDomainNotificationHandler<ChangeLengthOfClipNotification>>()!.Handle(casted!),
-                ChangeSourceIdOfClipNotification casted => _serviceProvider.GetService<IDomainNotificationHandler<ChangeSourceIdOfClipNotification>>()!.Handle(casted!),
                 _ => throw new NotImplementedException(),
             });
         }

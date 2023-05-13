@@ -16,11 +16,6 @@ public class ClipState
     /// Defines active length of clip, no events started after Length will be played
     /// </summary>
     public TimeSpan Length { get; set; }
-
-    /// <summary>
-    /// Defines reference of data source associated with given clip pre processors/synth/pads etc.
-    /// </summary>
-    public Guid SourceId { get; set; }
     public Guid Id { get; set; }
 }
 

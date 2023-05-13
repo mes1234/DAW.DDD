@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAW.DDD.Tests", "DAW.DDD.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAW.Repositories", "DAW.Repositories\DAW.Repositories.csproj", "{217A14EC-5927-4425-B548-335C854C3A81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAW.Repositories.Tests", "DAW.Repositories.Tests\DAW.Repositories.Tests.csproj", "{117E1090-1152-4A65-B826-C4BFC8916033}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAW.Repositories.Tests", "DAW.Repositories.Tests\DAW.Repositories.Tests.csproj", "{117E1090-1152-4A65-B826-C4BFC8916033}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAW.TracksService", "DAW.TracksService\DAW.TracksService.csproj", "{F66277E2-D34F-4FAE-860E-0927DE89A3E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAW.TracksService", "DAW.TracksService\DAW.TracksService.csproj", "{F66277E2-D34F-4FAE-860E-0927DE89A3E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAW.Services", "DAW.Services\DAW.Services.csproj", "{52AA59F2-71D9-4394-B6EA-CB4F6707A3D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{F66277E2-D34F-4FAE-860E-0927DE89A3E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F66277E2-D34F-4FAE-860E-0927DE89A3E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F66277E2-D34F-4FAE-860E-0927DE89A3E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52AA59F2-71D9-4394-B6EA-CB4F6707A3D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52AA59F2-71D9-4394-B6EA-CB4F6707A3D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52AA59F2-71D9-4394-B6EA-CB4F6707A3D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52AA59F2-71D9-4394-B6EA-CB4F6707A3D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

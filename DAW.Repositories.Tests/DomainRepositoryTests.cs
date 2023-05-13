@@ -86,7 +86,6 @@ public class DomainRepositoryTests
                   }
               }
             },
-            SourceId = Guid.NewGuid(),
         });
     }
     private void MockTracks()

@@ -24,10 +24,6 @@ public class Clip : IEntity, IPlayable
     /// </summary>
     public TimeSpan Length { get; private set; }
 
-    /// <summary>
-    /// Defines reference of data source associated with given clip pre processors/synth/pads etc.
-    /// </summary>
-    public Guid SourceId { get; private set; }
     public Guid Id { get; private set; }
 
     private INotificationPublisher _publisher;
@@ -52,21 +48,15 @@ public class Clip : IEntity, IPlayable
         _publisher.Publish(this.CreateChangeLengthOfClipNotification(length));
         return this;
     }
-    public Clip ChangeSourceId(Guid sourceId)
-    {
-        SourceId = sourceId;
-        _publisher.Publish(this.CreateChangeSourceIdOfClipNotification(sourceId));
-        return this;
-    }
-    public static Clip Create(ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, Guid sourceId, INotificationPublisher publisher) => Create(Guid.NewGuid(), sounds, length, sourceId, publisher);
 
-    public static Clip Create(Guid id, ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, Guid sourceId, INotificationPublisher publisher)
+    public static Clip Create(ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, INotificationPublisher publisher) => Create(Guid.NewGuid(), sounds, length, publisher);
+
+    public static Clip Create(Guid id, ICollection<EventAtLocation<SoundEvent>> sounds, TimeSpan length, INotificationPublisher publisher)
     {
         var newClip = new Clip(id, publisher);
 
         newClip.AddSounds(sounds);
         newClip.ChangeLength(length);
-        newClip.ChangeSourceId(sourceId);
 
         return newClip;
     }
@@ -111,5 +101,4 @@ public static class ClipEventExtensions
     public static ClipCreatedNotification CreateClipCreatedNotification(this Clip clip) => new(clip.Id, clip.Id.ToString(), clip);
     public static AddSoundToClipNotification CreateAddSoundToClipNotification(this Clip clip, EventAtLocation<SoundEvent> sound) => new(clip.Id, clip.Id.ToString(), sound);
     public static ChangeLengthOfClipNotification CreateChangeLengthOfClipNotification(this Clip clip, TimeSpan length) => new(clip.Id, clip.Id.ToString(), length);
-    public static ChangeSourceIdOfClipNotification CreateChangeSourceIdOfClipNotification(this Clip clip, Guid sourceId) => new(clip.Id, clip.Id.ToString(), sourceId);
 }

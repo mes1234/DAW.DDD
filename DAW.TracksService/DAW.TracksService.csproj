@@ -12,7 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DAW.Repositories\DAW.Repositories.csproj" />
+	  <ProjectReference Include="..\DAW.Services\DAW.Services.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using DAW.DDD.Domain.Entities;
 using DAW.DDD.Domain.ValueObjects;
-using DAW.Repositories.Dtos;
 using System.Collections.Generic;
 
-namespace DAW.TracksService.Dto;
+namespace DAW.Services.Dto;
 
 public class Mappings : Profile
 {

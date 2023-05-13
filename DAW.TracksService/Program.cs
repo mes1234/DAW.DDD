@@ -7,10 +7,10 @@ using DAW.DDD.Domain.ValueObjects;
 using DAW.Repositories;
 using DAW.Repositories.Commands;
 using DAW.Repositories.DataAccess;
-using DAW.Repositories.Dtos;
 using DAW.Repositories.States;
+using DAW.Services.Dto;
+using DAW.Services.Services;
 using DAW.TracksService.BackgroundWorkers;
-using DAW.TracksService.Dto;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 
@@ -32,11 +32,12 @@ builder.Services.AddTransient<INotificationDispatcher, NotificationPublisher>();
 builder.Services.AddTransient<IDomainNotificationHandler<ClipCreatedNotification>, ClipsCommandsHandlers>();
 builder.Services.AddTransient<IDomainNotificationHandler<AddSoundToClipNotification>, ClipsCommandsHandlers>();
 builder.Services.AddTransient<IDomainNotificationHandler<ChangeLengthOfClipNotification>, ClipsCommandsHandlers>();
-builder.Services.AddTransient<IDomainNotificationHandler<ChangeSourceIdOfClipNotification>, ClipsCommandsHandlers>();
 
 builder.Services.AddTransient<IDomainNotificationHandler<TrackCreatedNotification>, TracksCommandsHandlers>();
 builder.Services.AddTransient<IDomainNotificationHandler<ClipAddedToTrackNotification>, TracksCommandsHandlers>();
 builder.Services.AddTransient<IDomainNotificationHandler<ChangeTrackSourceIdNotification>, TracksCommandsHandlers>();
+builder.Services.AddTransient<ITrackService, TrackService>();
+builder.Services.AddTransient<ITrackView, TrackService>();
 
 builder.Services.AddHostedService<DomainEventsDispatcher>();
 builder.Services.AddAutoMapper(typeof(Mappings));
@@ -53,9 +54,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapPut("tracks", ([FromQuery] Guid? sourceId, [FromQuery] string name, [FromServices] INotificationPublisher notificationPublisher) =>
+app.MapPut("tracks", ([FromQuery] Guid? sourceId, [FromQuery] string name, [FromServices] ITrackService trackService) =>
 {
-    var track = Track.Create(Enumerable.Empty<EventAtLocation<Clip>>().ToList(), sourceId ?? Guid.Empty, notificationPublisher);
+    var track = trackService.CreateTrack(sourceId, name);
 
     var response = new { trackId = track.Id };
 
@@ -63,15 +64,9 @@ app.MapPut("tracks", ([FromQuery] Guid? sourceId, [FromQuery] string name, [From
 
 }).WithName("PutNewTrack");
 
-app.MapPut("tracks/{trackId}/clips", async ([FromRoute] Guid trackId, [FromQuery] int lengthSec, [FromServices] ModelRepository modelRepository, [FromServices] INotificationPublisher notificationPublisher) =>
+app.MapPut("tracks/{trackId}/clips", async ([FromRoute] Guid trackId, [FromQuery] int length_ms, [FromServices] ITrackService trackService) =>
 {
-    var track = await modelRepository.GetTrack(trackId);
-
-    if (track == null) return Results.BadRequest($"Track {trackId} doesn't exist");
-
-    var clip = Clip.Create(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList(), TimeSpan.FromSeconds(lengthSec), Guid.Empty, notificationPublisher);
-
-    track.AddClip(EventAtLocation<Clip>.Create(Location.Create(track.Length), clip));
+    var clip = await trackService.CreateClip(trackId, length_ms);
 
     var response = new { clipId = clip.Id };
 
@@ -79,107 +74,46 @@ app.MapPut("tracks/{trackId}/clips", async ([FromRoute] Guid trackId, [FromQuery
 
 }).WithName("PutNewClip");
 
-app.MapPut("tracks/{trackId}/clips/{clipId}/sounds", async ([FromRoute] Guid trackId, [FromRoute] Guid clipId, [FromBody] IEnumerable<EventAtLocationDto<SoundEventDto>> sounds, [FromServices] ModelRepository modelRepository, [FromServices] INotificationPublisher notificationPublisher, [FromServices] IMapper mapper) =>
+app.MapPut("tracks/{trackId}/clips/{clipId}/sounds", async ([FromRoute] Guid trackId, [FromRoute] Guid clipId, [FromBody] IEnumerable<EventAtLocationDto<SoundEventDto>> sounds, [FromServices] ITrackService trackService) =>
 {
-    var track = await modelRepository.GetTrack(trackId);
-
-    if (track == null) return Results.BadRequest($"Track {trackId} doesn't exist");
-
-    var clip = track.Clips.FirstOrDefault(x => x.Event.Id == clipId);
-
-    if (clip == null) return Results.BadRequest($"Clip {clipId} doesn't exist");
-
-    AddSounds(sounds, clip);
-
-    var soundEvents = clip.GetPlayableEvents(Location.EmptyLocation);
-
-    var soundEventsMapped = MapPlayableEvents(mapper, soundEvents);
+    var soundEventsMapped = await trackService.CreateSounds(trackId, clipId, sounds);
 
     return Results.Created(new Uri($"https://localhost:7267/playable/{trackId}/clips/{clipId}"), (soundEventsMapped));
 
 }).WithName("PutSounds");
 
 
-app.MapGet("tracks/{id}", async ([FromRoute] Guid id, [FromServices] ModelRepository modelRepository, [FromServices] IMapper mapper) =>
+app.MapGet("tracks/{id}", async ([FromRoute] Guid id, [FromServices] ITrackView trackView) =>
 {
-    var track = await modelRepository.GetTrack(id);
+    var track = await trackView.GetTrack(id);
 
-    if (track != null)
-    {
-        return Results.Ok(mapper.Map<TrackDto>(track));
-    }
-    else
-    {
-        return Results.NotFound();
-    }
+    return (track != null)
+    ? Results.Ok(track)
+    : Results.NotFound();
+
 }).WithName("GetTrackById");
 
-app.MapGet("playable/{trackId}", async ([FromRoute] Guid trackId, [FromServices] ModelRepository modelRepository, [FromServices] IMapper mapper) =>
+app.MapGet("playable/{trackId}", async ([FromRoute] Guid trackId, [FromServices] ITrackView trackView) =>
 {
-    var track = await modelRepository.GetTrack(trackId);
+    var playable = await trackView.GetTrackPlayable(trackId);
 
-    if (track != null)
-    {
-        var sounds = track.GetPlayableEvents(Location.EmptyLocation);
+    return (playable != null)
+    ? Results.Ok(playable)
+    : Results.NotFound();
 
-        return Results.Ok(MapPlayableEvents(mapper, sounds));
-    }
-    else
-    {
-        return Results.NotFound();
-    }
 }).WithName("GetTrackPlayable");
 
 
-app.MapGet("playable/{trackId}/clips/{clipId}", async ([FromRoute] Guid trackId, [FromRoute] Guid clipId, [FromServices] ModelRepository modelRepository, [FromServices] IMapper mapper) =>
+app.MapGet("playable/{trackId}/clips/{clipId}", async ([FromRoute] Guid trackId, [FromRoute] Guid clipId, [FromServices] ITrackView trackView) =>
 {
-    var track = await modelRepository.GetTrack(trackId);
+    var playable = await trackView.GetClipPlayable(trackId, clipId);
 
-    if (track != null)
-    {
-        var clip = track.Clips.FirstOrDefault(x => x.Event.Id == clipId);
-
-        if (clip != null)
-        {
-            var sounds = clip.GetPlayableEvents(Location.EmptyLocation);
-
-            return Results.Ok(MapPlayableEvents(mapper, sounds));
-        }
-    }
-
-    return Results.NotFound();
+    return (playable != null)
+    ? Results.Ok(playable)
+    : Results.NotFound();
 
 }).WithName("GetClipPlayable");
 
 
 
 app.Run();
-
-static List<EventAtLocationDto<IEnumerable<SoundEventDto>>> MapPlayableEvents(IMapper mapper, IReadOnlyCollection<EventAtLocation<IReadOnlyCollection<SoundEvent>>> soundEvents)
-{
-    var soundEventsMapped = new List<EventAtLocationDto<IEnumerable<SoundEventDto>>>();
-
-    foreach (var soundEvent in soundEvents)
-    {
-        var mappedSoundEvent = mapper.Map<EventAtLocationDto<IEnumerable<SoundEventDto>>>(soundEvent);
-
-        soundEventsMapped.Add(mappedSoundEvent);
-    }
-
-    return soundEventsMapped;
-}
-
-static void AddSounds(IEnumerable<EventAtLocationDto<SoundEventDto>> sounds, EventAtLocation<Clip> clip)
-{
-    var soundsModel = new List<EventAtLocation<SoundEvent>>();
-
-    foreach (var sound in sounds)
-    {
-        soundsModel.Add(
-            EventAtLocation<SoundEvent>.Create(
-                Location.Create(TimeSpan.FromMilliseconds(sound.Location!.Start_ms), true),
-                SoundEvent.Create(sound.Event!.Velocity, sound.Event.Pitch, TimeSpan.FromMilliseconds(sound.Event.Length_ms), TimeSpan.FromMilliseconds(sound.Event.Offset_ms))));
-    }
-
-    clip.Event.AddSounds(soundsModel);
-}
