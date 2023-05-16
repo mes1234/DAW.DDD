@@ -12,7 +12,6 @@ using DAW.Services.Dto;
 using DAW.Services.Services;
 using DAW.TracksService.BackgroundWorkers;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
