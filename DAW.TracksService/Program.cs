@@ -22,10 +22,22 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<INotificationPublisher, NotificationPublisher>();
 builder.Services.AddTransient<ModelRepository>();
+
+builder.Services.AddMemoryCache();
+
 builder.Services.AddTransient<IModelStateReader<ClipState>, InMemoryStorage<ClipState>>();
+builder.Services.Decorate<IModelStateReader<ClipState>, LocalMemoryCacheReader<ClipState>>();
+
 builder.Services.AddTransient<IModelStateReader<TrackState>, InMemoryStorage<TrackState>>();
+builder.Services.Decorate<IModelStateReader<TrackState>, LocalMemoryCacheReader<TrackState>>();
+
 builder.Services.AddTransient<IModelStateWriter<ClipState>, InMemoryStorage<ClipState>>();
+builder.Services.Decorate<IModelStateWriter<ClipState>, LocalMemoryCacheWriter<ClipState>>();
+
 builder.Services.AddTransient<IModelStateWriter<TrackState>, InMemoryStorage<TrackState>>();
+builder.Services.Decorate<IModelStateWriter<TrackState>, LocalMemoryCacheWriter<TrackState>>();
+
+
 builder.Services.AddTransient<INotificationPublisher, NotificationPublisher>();
 builder.Services.AddTransient<INotificationDispatcher, NotificationPublisher>();
 
@@ -54,6 +66,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
+
 app.MapPut("tracks", ([FromQuery] Guid? sourceId, [FromQuery] string name, [FromServices] ITrackService trackService) =>
 {
     var track = trackService.CreateTrack(sourceId, name);
@@ -68,9 +81,11 @@ app.MapPut("tracks/{trackId}/clips", async ([FromRoute] Guid trackId, [FromQuery
 {
     var clip = await trackService.CreateClip(trackId, length_ms);
 
-    var response = new { clipId = clip.Id };
+    var response = new { clipId = clip?.Id ?? Guid.Empty };
 
-    return Results.Created(new Uri($"https://localhost:7267/tracks/{trackId}/clips/{clip.Id}"), response);
+    return (clip != null)
+    ? Results.Created(new Uri($"https://localhost:7267/tracks/{trackId}/clips/{clip.Id}"), response)
+    : Results.NotFound(trackId);
 
 }).WithName("PutNewClip");
 
@@ -78,7 +93,9 @@ app.MapPut("tracks/{trackId}/clips/{clipId}/sounds", async ([FromRoute] Guid tra
 {
     var soundEventsMapped = await trackService.CreateSounds(trackId, clipId, sounds);
 
-    return Results.Created(new Uri($"https://localhost:7267/playable/{trackId}/clips/{clipId}"), (soundEventsMapped));
+    return (soundEventsMapped != null)
+    ? Results.Created(new Uri($"https://localhost:7267/playable/{trackId}/clips/{clipId}"), (soundEventsMapped))
+    : Results.NotFound(clipId);
 
 }).WithName("PutSounds");
 
@@ -113,7 +130,5 @@ app.MapGet("playable/{trackId}/clips/{clipId}", async ([FromRoute] Guid trackId,
     : Results.NotFound();
 
 }).WithName("GetClipPlayable");
-
-
 
 app.Run();

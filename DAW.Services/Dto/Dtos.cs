@@ -12,11 +12,6 @@ public class ClipDto
     /// <remarks>Expressed in milliseconds</remarks> 
     /// </summary>
     public int Length_ms { get; set; }
-
-    /// <summary>
-    /// Defines reference of data source associated with given clip pre processors/synth/pads etc.
-    /// </summary>
-    public Guid SourceId { get; set; }
     public Guid Id { get; set; }
 }
 
