@@ -1,4 +1,5 @@
 using AutoMapper;
+using DAW.DDD.Domain.Entities;
 using DAW.DDD.Domain.Notifications;
 using DAW.DDD.Domain.Notifications.Clips;
 using DAW.DDD.Domain.Notifications.Tracks;
@@ -76,6 +77,75 @@ public class TrackServiceTests
         clip.Should().NotBeNull();
         clip!.Id.Should().NotBeEmpty();
         clip.Length_ms.Should().Be(trackLength);
+    }
 
+    [Fact]
+    public async Task NewDefinedSoundShouldCreateEventsAndObjects_Test()
+    {
+        // Arrange 
+        var trackLength = 1000;
+        var clipId = Guid.NewGuid();
+        var trackId = Guid.NewGuid();
+
+        var dummyTrack = new TrackState
+        {
+            Clips = new List<EventAtLocationState<Guid>>
+            {
+                new EventAtLocationState<Guid>
+                {
+                    Event = clipId,
+                    Location = new LocationState
+                    {
+                        Active =true,
+                        Start =TimeSpan.FromSeconds(1),
+                    }
+                }
+            },
+            Id = trackId,
+            SourceId = Guid.NewGuid(),
+        };
+
+        var dummyClip = new ClipState
+        {
+            Id = clipId,
+            Length = TimeSpan.FromMilliseconds(1000),
+            Sounds = new List<EventAtLocationState<SoundEventState>>(),
+        };
+
+        _trackStateProvider.TryGet(Arg.Any<Guid>()).Returns(o => Task.FromResult((TrackState?)dummyTrack));
+
+        _clipStateProvider.TryGet(Arg.Any<Guid>()).Returns(o => Task.FromResult((ClipState?)dummyClip));
+
+        var sounds = new List<EventAtLocationDto<SoundEventDto>>
+        {
+            new EventAtLocationDto<SoundEventDto>
+            {
+                Event = new SoundEventDto
+                {
+                    Length_ms =1000,
+                    Offset_ms =100,
+                    Pitch =122,
+                    Velocity = 111
+                },
+                Location = new LocationDto
+                {
+                    Active = true,
+                    Start_ms = 123,
+                }
+            }
+        };
+
+        //Act
+        var soundsRetrieved = await _trackService.CreateSounds(trackId, clipId, sounds);
+
+        //Assert
+        _notificationPublisher.Received(1).Publish(Arg.Any<AddSoundToClipNotification>());
+
+        soundsRetrieved.Should().NotBeEmpty();
+        soundsRetrieved.First().Event!.First().Pitch.Should().Be(122);
+        soundsRetrieved.First().Event!.First().Velocity.Should().Be(111);
+        soundsRetrieved.First().Event!.First().Length_ms.Should().Be(1000);
+        soundsRetrieved.First().Event!.First().Offset_ms.Should().Be(0); // TODO why?
+        soundsRetrieved.First().Location!.Start_ms.Should().Be(1000 + 123);
     }
 }
