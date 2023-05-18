@@ -148,4 +148,96 @@ public class TrackServiceTests
         soundsRetrieved.First().Event!.First().Offset_ms.Should().Be(0); // TODO why?
         soundsRetrieved.First().Location!.Start_ms.Should().Be(1000 + 123);
     }
+
+    /// <summary>
+    /// This test is weak while most of data is mocked. 
+    /// Full logic test is <see cref="TrackTests"/>
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task GetTrackPlayableReturnSounds_Test()
+    {
+        // Arrange 
+        var trackLength = 1000;
+        var clipId = Guid.NewGuid();
+        var trackId = Guid.NewGuid();
+
+        var dummyTrack = new TrackState
+        {
+            Clips = new List<EventAtLocationState<Guid>>
+            {
+                new EventAtLocationState<Guid>
+                {
+                    Event = clipId,
+                    Location = new LocationState
+                    {
+                        Active =true,
+                        Start =TimeSpan.FromSeconds(1),
+                    }
+                }
+            },
+            Id = trackId,
+            SourceId = Guid.NewGuid(),
+        };
+
+
+
+        _trackStateProvider.TryGet(Arg.Any<Guid>()).Returns(o => Task.FromResult((TrackState?)dummyTrack));
+
+        var sounds = new List<EventAtLocationDto<SoundEventDto>>
+        {
+            new EventAtLocationDto<SoundEventDto>
+            {
+                Event = new SoundEventDto
+                {
+                    Length_ms =1000,
+                    Offset_ms =100,
+                    Pitch =122,
+                    Velocity = 111
+                },
+                Location = new LocationDto
+                {
+                    Active = true,
+                    Start_ms = 123,
+                }
+            }
+        };
+
+        var dummyClip = new ClipState
+        {
+            Id = clipId,
+            Length = TimeSpan.FromMilliseconds(10000),
+            Sounds = new List<EventAtLocationState<SoundEventState>>
+        {
+            new EventAtLocationState<SoundEventState>
+            {
+                Event = new SoundEventState
+                {
+                    Length = TimeSpan.FromMilliseconds(1000),
+                    Offset = TimeSpan.FromMilliseconds(100),
+                    Pitch =122,
+                    Velocity = 111
+                },
+                Location = new LocationState
+                {
+                    Active = true,
+                    Start =TimeSpan.FromMilliseconds(123),
+                }
+            }
+        },
+        };
+
+        _clipStateProvider.TryGet(Arg.Any<Guid>()).Returns(o => Task.FromResult((ClipState?)dummyClip));
+
+        //Act
+        await _trackService.CreateSounds(trackId, clipId, sounds);
+
+        var playableTrack = await _trackService.GetTrackPlayable(trackId);
+        var playableClip = await _trackService.GetClipPlayable(trackId, clipId);
+
+        //Assert
+
+        playableTrack.Should().HaveCount(1);
+        playableClip.Should().HaveCount(1);
+    }
 }
