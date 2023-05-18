@@ -7,6 +7,7 @@ using DAW.Repositories.DataAccess;
 using DAW.Repositories.States;
 using DAW.Services.Dto;
 using DAW.Services.Services;
+using DAW.TracksService;
 using DAW.TracksService.BackgroundWorkers;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
@@ -58,6 +59,8 @@ public class Program
 
         builder.Services.AddHostedService<DomainEventsDispatcher>();
         builder.Services.AddAutoMapper(typeof(Mappings));
+
+        builder.Services.Configure<CacheOptions>(builder.Configuration.GetSection(CacheOptions.Name));
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();

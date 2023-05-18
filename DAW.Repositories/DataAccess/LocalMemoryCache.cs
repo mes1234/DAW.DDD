@@ -1,22 +1,21 @@
-﻿using DAW.Repositories.States;
-using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
+
 
 namespace DAW.Repositories.DataAccess;
+
+[ExcludeFromCodeCoverage]
 public class LocalMemoryCacheWriter<T> : IModelStateWriter<T> where T : class
 {
-    private static readonly TimeSpan _ttl = TimeSpan.FromSeconds(60);
     private readonly IMemoryCache _memoryCache;
 
     private readonly IModelStateWriter<T> _innerWriter;
+    private readonly CacheOptions _cacheOptions;
 
-    public LocalMemoryCacheWriter(IModelStateWriter<T> innerWriter, IMemoryCache memoryCache)
+    public LocalMemoryCacheWriter(IModelStateWriter<T> innerWriter, IMemoryCache memoryCache, IOptions<CacheOptions> configureOptions)
     {
+        _cacheOptions = configureOptions.Value;
         _innerWriter = innerWriter;
         _memoryCache = memoryCache;
     }
@@ -24,7 +23,7 @@ public class LocalMemoryCacheWriter<T> : IModelStateWriter<T> where T : class
     public Task TryAddOrUpdate(Guid id, T value)
     {
         var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(_ttl);
+            .SetAbsoluteExpiration(_cacheOptions.Ttl);
 
         _memoryCache.Set(id, value, cacheEntryOptions);
 
@@ -34,14 +33,15 @@ public class LocalMemoryCacheWriter<T> : IModelStateWriter<T> where T : class
 }
 public class LocalMemoryCacheReader<T> : IModelStateReader<T> where T : class
 {
-    private static readonly TimeSpan _ttl = TimeSpan.FromSeconds(60);
-
     private readonly IMemoryCache _memoryCache;
 
     private readonly IModelStateReader<T> _innerReader;
 
-    public LocalMemoryCacheReader(IModelStateReader<T> innerReader, IMemoryCache memoryCache)
+    private readonly CacheOptions _cacheOptions;
+
+    public LocalMemoryCacheReader(IModelStateReader<T> innerReader, IMemoryCache memoryCache, IOptions<CacheOptions> configureOptions)
     {
+        _cacheOptions = configureOptions.Value;
         _innerReader = innerReader;
         _memoryCache = memoryCache;
     }
@@ -56,7 +56,7 @@ public class LocalMemoryCacheReader<T> : IModelStateReader<T> where T : class
         var found = await _innerReader.TryGet(id);
 
         var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(_ttl);
+            .SetAbsoluteExpiration(_cacheOptions.Ttl);
 
         _memoryCache.Set(id, found, cacheEntryOptions);
 
