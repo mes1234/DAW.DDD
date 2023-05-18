@@ -1,9 +1,11 @@
 ﻿using DAW.DDD.Domain.Notifications;
 using DAW.DDD.Domain.Notifications.Clips;
 using DAW.DDD.Domain.Notifications.Tracks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DAW.TracksService.BackgroundWorkers;
 
+[ExcludeFromCodeCoverage]
 public class DomainEventsDispatcher : BackgroundService
 {
     private readonly INotificationDispatcher _dispatcher;
