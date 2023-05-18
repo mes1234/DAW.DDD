@@ -31,6 +31,8 @@ public class LocalMemoryCacheWriter<T> : IModelStateWriter<T> where T : class
     }
 
 }
+
+[ExcludeFromCodeCoverage]
 public class LocalMemoryCacheReader<T> : IModelStateReader<T> where T : class
 {
     private readonly IMemoryCache _memoryCache;
