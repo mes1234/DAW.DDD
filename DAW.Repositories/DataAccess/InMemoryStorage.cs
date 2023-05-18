@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DAW.Repositories.DataAccess;
-internal class InMemoryStorage<T> : IModelStateReader<T>, IModelStateWriter<T> where T : class
+public class InMemoryStorage<T> : IModelStateReader<T>, IModelStateWriter<T> where T : class
 {
     private const int DbDelay = 100;
 
-    private readonly ConcurrentDictionary<Guid, T> _storage = new ConcurrentDictionary<Guid, T>();
+    private static readonly ConcurrentDictionary<Guid, T> _storage = new ConcurrentDictionary<Guid, T>();
     public async Task TryAddOrUpdate(Guid id, T value)
     {
         await Task.Delay(DbDelay);

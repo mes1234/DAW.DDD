@@ -24,7 +24,6 @@ public class ModelRepository
         _notificationPublisher = notificationPublisher;
     }
 
-    // TODO TEST IT!!!
     public async Task<Clip?> GetClip(Guid id)
     {
         var state = await _clipStateProvider.TryGet(id);
@@ -38,7 +37,6 @@ public class ModelRepository
         return model;
     }
 
-    // TODO TEST IT!!!
     public async Task<Track?> GetTrack(Guid id)
     {
         // Get state of Track

@@ -1,38 +1,35 @@
-﻿using DAW.DDD.Domain.Entities;
-using DAW.DDD.Domain.Notifications;
-using DAW.DDD.Domain.Primitives;
-using DAW.DDD.Domain.ValueObjects;
-
-namespace DAW.Repositories.States;
+﻿namespace DAW.Services.Dto;
 
 /// <summary>
 /// Represents Clip in storage only POCO should exist here
 /// </summary>
-public class ClipState
+public class ClipDto
 {
-    public ICollection<EventAtLocationState<SoundEventState>> Sounds { get; set; } = new List<EventAtLocationState<SoundEventState>>();
+    public ICollection<EventAtLocationDto<SoundEventDto>> Sounds { get; set; } = new List<EventAtLocationDto<SoundEventDto>>();
 
     /// <summary>
     /// Defines active length of clip, no events started after Length will be played
+    /// <remarks>Expressed in milliseconds</remarks> 
     /// </summary>
-    public TimeSpan Length { get; set; }
+    public int Length_ms { get; set; }
     public Guid Id { get; set; }
 }
 
-public record EventAtLocationState<T>
+public record EventAtLocationDto<T>
 {
-    public LocationState? Location { get; set; }
+    public LocationDto? Location { get; set; }
     public T? Event { get; set; }
 
 }
 
-public record LocationState
+public record LocationDto
 {
 
     /// <summary>
     /// Defines when event occurred assuming T=0 is beginning of container (Clip/Track) 
+    /// <remarks>Expressed in milliseconds</remarks> 
     /// </summary>
-    public TimeSpan Start { get; set; }
+    public int Start_ms { get; set; }
 
     /// <summary>
     /// Defines if given event should be collected for playback
@@ -43,7 +40,7 @@ public record LocationState
 /// <summary>
 /// SoundEvent represents single midi note/audio waveform
 /// </summary>
-public record SoundEventState
+public record SoundEventDto
 {
 
     /// <summary>
@@ -59,19 +56,27 @@ public record SoundEventState
 
     /// <summary>
     /// Defines how long events is occurring
+    /// <remarks>Expressed in milliseconds</remarks> 
     /// </summary>
-    public TimeSpan Length { get; set; }
+    public int Length_ms { get; set; }
 
     /// <summary>
     /// Defines artificial when to assume note was playing eg. crop of audio beginning
+    /// <remarks>Expressed in milliseconds</remarks> 
     /// </summary>
-    public TimeSpan Offset { get; set; }
+    public int Offset_ms { get; set; }
 }
 
-public class TrackState
+public class TrackDto
 {
-    public ICollection<EventAtLocationState<Guid>> Clips { get; set; } = new List<EventAtLocationState<Guid>>();
+    public ICollection<EventAtLocationDto<ClipDto>> Clips { get; set; } = new List<EventAtLocationDto<ClipDto>>();
     public Guid Id { get; set; }
     public Guid SourceId { get; set; } = Guid.Empty;
+
+    /// <summary>
+    /// Defines how long events is occurring
+    /// <remarks>Expressed in milliseconds</remarks> 
+    /// </summary>
+    public int Length_ms { get; set; }
 
 }

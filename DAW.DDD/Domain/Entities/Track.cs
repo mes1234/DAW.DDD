@@ -22,6 +22,9 @@ public class Track : IEntity, IPlayable
 
     public Guid SourceId { get; private set; } = Guid.Empty;
 
+    //TODO TEST IT!
+    public TimeSpan Length => TimeSpan.FromMilliseconds(_clips.Sum(x => x.Event.Length.TotalMilliseconds));
+
     private INotificationPublisher _publisher;
     protected Track(Guid id, INotificationPublisher publisher)
     {

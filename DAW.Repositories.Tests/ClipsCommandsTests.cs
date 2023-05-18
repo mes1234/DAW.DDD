@@ -17,7 +17,7 @@ public class ClipsCommandsTests
         // Arrange
         var storage = new InMemoryStorage<ClipState>();
 
-        var clip = Clip.Create(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList(), TimeSpan.FromSeconds(0), Guid.NewGuid(), NullNotificationPublisher.Instance);
+        var clip = Clip.Create(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList(), TimeSpan.FromSeconds(0), NullNotificationPublisher.Instance);
         var command = clip.CreateClipCreatedNotification();
 
         var handler = new ClipsCommandsHandlers(storage, storage);
@@ -38,11 +38,11 @@ public class ClipsCommandsTests
         // Arrange
         var storage = new InMemoryStorage<ClipState>();
 
-        var clip = Clip.Create(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList(), TimeSpan.FromSeconds(0), Guid.NewGuid(), NullNotificationPublisher.Instance);
+        var clip = Clip.Create(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList(), TimeSpan.FromSeconds(0), NullNotificationPublisher.Instance);
         var command1 = clip.CreateClipCreatedNotification();
         var command2 = clip.CreateAddSoundToClipNotification(EventAtLocation<SoundEvent>.Create(Location.Create(TimeSpan.FromSeconds(1), true), SoundEvent.Create(2, 2, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1))));
         var command3 = clip.CreateChangeLengthOfClipNotification(TimeSpan.FromSeconds(5));
-        var command4 = clip.CreateChangeSourceIdOfClipNotification(Guid.NewGuid());
+
 
         var handler = new ClipsCommandsHandlers(storage, storage);
         // Act
@@ -50,7 +50,6 @@ public class ClipsCommandsTests
         await handler.Handle(command1);
         await handler.Handle(command2);
         await handler.Handle(command3);
-        await handler.Handle(command4);
 
         // Assert
 
@@ -58,7 +57,6 @@ public class ClipsCommandsTests
 
         clipRetrieved.Should().NotBeNull();
         clipRetrieved!.Length.Should().Be(command3.Length);
-        clipRetrieved!.SourceId.Should().Be(command4.SourceId);
         clipRetrieved!.Sounds.Should().HaveCount(1);
         clipRetrieved!.Sounds.First().Event!.Velocity.Should().Be(command2.Sound.Velocity);
         clipRetrieved!.Sounds.First().Event!.Pitch.Should().Be(command2.Sound.Pitch);

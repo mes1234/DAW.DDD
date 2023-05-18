@@ -22,7 +22,7 @@ public class ClipTests
 
         var pairsNotes2 = EventAtLocation<SoundEvent>.Create(location2, midiEvent2);
 
-        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         // Act
         var playableEvents = clip1.GetPlayableEvents(Location.EmptyLocation);
@@ -49,7 +49,7 @@ public class ClipTests
 
         var pairsNotes2 = EventAtLocation<SoundEvent>.Create(location2, midiEvent2);
 
-        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         // Act
         var playableEvents = clip1.GetPlayableEvents(Location.EmptyLocation);
@@ -71,7 +71,7 @@ public class ClipTests
 
         var pairsNotes1 = EventAtLocation<SoundEvent>.Create(location1, midiEvent1);
 
-        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         var clipOffset = Location.Create(TimeSpan.FromSeconds(1));
 
@@ -101,7 +101,7 @@ public class ClipTests
 
         var pairsNotes2 = EventAtLocation<SoundEvent>.Create(location2, midiEvent2);
 
-        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         var clipOffset = Location.Create(TimeSpan.FromSeconds(1));
 

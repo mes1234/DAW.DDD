@@ -23,7 +23,7 @@ public class TrackTests
 
         var pairsNotes2 = EventAtLocation<SoundEvent>.Create(location2, midiEvent2);
 
-        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         // Clip 2
         var midiEvent3 = SoundEvent.Create(3, 3, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(0));
@@ -36,7 +36,7 @@ public class TrackTests
 
         var pairsNotes4 = EventAtLocation<SoundEvent>.Create(location4, midiEvent4);
 
-        var clip2 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes3, pairsNotes4 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip2 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes3, pairsNotes4 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         // Track1
 
@@ -80,7 +80,7 @@ public class TrackTests
 
         var pairsNotes2 = EventAtLocation<SoundEvent>.Create(location2, midiEvent2);
 
-        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         // Clip 2
         var midiEvent3 = SoundEvent.Create(3, 3, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(0));
@@ -93,7 +93,7 @@ public class TrackTests
 
         var pairsNotes4 = EventAtLocation<SoundEvent>.Create(location4, midiEvent4);
 
-        var clip2 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes3, pairsNotes4 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip2 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes3, pairsNotes4 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         // Track1
 
@@ -137,7 +137,7 @@ public class TrackTests
 
         var pairsNotes2 = EventAtLocation<SoundEvent>.Create(location2, midiEvent2);
 
-        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip1 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes1, pairsNotes2 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         // Clip 2
         var midiEvent3 = SoundEvent.Create(3, 3, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(0));
@@ -150,7 +150,7 @@ public class TrackTests
 
         var pairsNotes4 = EventAtLocation<SoundEvent>.Create(location4, midiEvent4);
 
-        var clip2 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes3, pairsNotes4 }, TimeSpan.FromSeconds(10), Guid.Empty, NullNotificationPublisher.Instance);
+        var clip2 = Clip.Create(new List<EventAtLocation<SoundEvent>> { pairsNotes3, pairsNotes4 }, TimeSpan.FromSeconds(10), NullNotificationPublisher.Instance);
 
         // Track1
 

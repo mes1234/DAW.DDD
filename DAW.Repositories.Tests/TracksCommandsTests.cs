@@ -40,7 +40,7 @@ public class TracksCommandsTests
 
         var track = Track.Create(Enumerable.Empty<EventAtLocation<Clip>>().ToList(), Guid.NewGuid(), NullNotificationPublisher.Instance);
         var command1 = track.CreateTrackCreatedNotification();
-        var command2 = track.CreateClipAddedToTrackNotification(EventAtLocation<Clip>.Create(Location.Create(TimeSpan.FromSeconds(1), true), Clip.Create(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList(), TimeSpan.FromSeconds(1), Guid.NewGuid(), NullNotificationPublisher.Instance)));
+        var command2 = track.CreateClipAddedToTrackNotification(EventAtLocation<Clip>.Create(Location.Create(TimeSpan.FromSeconds(1), true), Clip.Create(Enumerable.Empty<EventAtLocation<SoundEvent>>().ToList(), TimeSpan.FromSeconds(1), NullNotificationPublisher.Instance)));
         var command3 = track.CreateChangeTrackSourceIdNotification(Guid.NewGuid());
 
         var handler = new TracksCommandsHandlers(storage, storage);

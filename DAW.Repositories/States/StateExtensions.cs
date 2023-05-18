@@ -27,7 +27,7 @@ internal static class StateExtensions
 
     public static Clip ToModel(this ClipState state)
     {
-        return Clip.Create(state.Id, state.Sounds.Select(x => x.ToModel()).ToList(), state.Length, state.SourceId, NullNotificationPublisher.Instance);
+        return Clip.Create(state.Id, state.Sounds.Select(x => x.ToModel()).ToList(), state.Length, NullNotificationPublisher.Instance);
     }
 
     public static Track ToModel(this TrackState state, IEnumerable<Clip> clips)
