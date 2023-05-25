@@ -10,6 +10,7 @@ namespace DAW.Services.Dto;
 
 public record StoredSound(byte[] Content, string Name, Guid SourceId, int Pitch);
 
+[ExcludeFromCodeCoverage]
 public static class StoredSoundExtensions
 {
     public static Guid GetStoredId(Guid sourceId, int pitch)
