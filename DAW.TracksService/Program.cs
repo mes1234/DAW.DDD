@@ -1,3 +1,4 @@
+using DAW.DDD.Domain.Entities;
 using DAW.DDD.Domain.Notifications;
 using DAW.DDD.Domain.Notifications.Clips;
 using DAW.DDD.Domain.Notifications.Tracks;
@@ -9,13 +10,16 @@ using DAW.Services.Dto;
 using DAW.Services.Services;
 using DAW.TracksService;
 using DAW.TracksService.BackgroundWorkers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Mime;
 
 namespace TrackServiceCore;
 
 [ExcludeFromCodeCoverage]
-public class Program
+public static class Program
 {
     public static void Main(string[] args)
     {
@@ -37,11 +41,17 @@ public class Program
         builder.Services.AddTransient<IModelStateReader<TrackState>, InMemoryStorage<TrackState>>();
         builder.Services.Decorate<IModelStateReader<TrackState>, LocalMemoryCacheReader<TrackState>>();
 
+        builder.Services.AddTransient<IModelStateReader<StoredSound>, InMemoryStorage<StoredSound>>();
+        builder.Services.Decorate<IModelStateReader<StoredSound>, LocalMemoryCacheReader<StoredSound>>();
+
         builder.Services.AddTransient<IModelStateWriter<ClipState>, InMemoryStorage<ClipState>>();
         builder.Services.Decorate<IModelStateWriter<ClipState>, LocalMemoryCacheWriter<ClipState>>();
 
         builder.Services.AddTransient<IModelStateWriter<TrackState>, InMemoryStorage<TrackState>>();
         builder.Services.Decorate<IModelStateWriter<TrackState>, LocalMemoryCacheWriter<TrackState>>();
+
+        builder.Services.AddTransient<IModelStateWriter<StoredSound>, InMemoryStorage<StoredSound>>();
+        builder.Services.Decorate<IModelStateWriter<StoredSound>, LocalMemoryCacheWriter<StoredSound>>();
 
 
         builder.Services.AddTransient<INotificationPublisher, NotificationPublisher>();
@@ -143,6 +153,33 @@ public class Program
             : Results.NotFound();
 
         }).WithName("GetClipPlayable");
+
+        app.MapPost("sounds/{sourceId}/{pitch}", async ([FromForm] IFormFile file, [FromRoute] Guid sourceId, [FromRoute] int pitch, [FromServices] IModelStateWriter<StoredSound> soundRepository) =>
+        {
+            var content = new byte[file.Length];
+
+            await file.CopyToAsync(new MemoryStream(content));
+
+            var sound = new StoredSound(content, file.FileName, sourceId, pitch);
+
+            var id = StoredSoundExtensions.GetStoredId(sound.SourceId, sound.Pitch);
+
+            await soundRepository.TryAddOrUpdate(id, sound);
+
+            return Results.Created(new Uri($"https://localhost:7267/sounds/{sourceId}/{pitch}"), file.FileName);
+        });
+
+        app.MapGet("sounds/{sourceId}/{pitch}", async ([FromRoute] Guid sourceId, [FromRoute] int pitch, [FromServices] IModelStateReader<StoredSound> soundRepository) =>
+        {
+            var id = StoredSoundExtensions.GetStoredId(sourceId, pitch);
+
+            var sound = await soundRepository.TryGet(id);
+
+            if (sound == null) return Results.NotFound();
+
+            return Results.File(sound.Content, contentType: "audio/wav");
+
+        }).Produces(StatusCodes.Status200OK, contentType: "audio/wav");
 
         app.Run();
     }
