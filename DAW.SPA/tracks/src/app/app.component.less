@@ -1,0 +1,38 @@
+.app {
+    display: grid;
+    grid-template-columns: 30vw auto;
+    grid-template-rows: 5vh auto 30vh;
+    grid-template-areas:
+        "project project"
+        "sound arrangement"
+        "clip clip";
+    font-weight: bold;
+    text-align: center;
+    grid-gap: 10px;
+    width: 100vw;
+    height: 100vh;
+}
+
+.app>* {
+    padding: 10px;
+}
+
+.project {
+    background-color: beige;
+    grid-area: project;
+}
+
+.sound {
+    background-color: red;
+    grid-area: sound;
+}
+
+.arrangement {
+    background-color: blue;
+    grid-area: arrangement;
+}
+
+.clip {
+    background-color: gold;
+    grid-area: clip;
+}
