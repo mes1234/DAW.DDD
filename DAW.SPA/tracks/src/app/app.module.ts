@@ -6,10 +6,14 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatGridListModule } from '@angular/material/grid-list';
+import { SoundDesignComponent } from './sound-design/sound-design.component';
+import { PadsComponent } from './pads/pads.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SoundDesignComponent,
+    PadsComponent
   ],
   imports: [
     BrowserModule,
