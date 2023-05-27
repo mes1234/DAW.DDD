@@ -1,0 +1,58 @@
+.arrangement {
+    background-color: crimson;
+    display: grid;
+    grid-template-columns: 25fr 25fr 25fr 25fr;
+    grid-template-rows: 25fr 75fr;
+    grid-template-areas:
+        "transport transport  transport transport"
+        "track1 track2 track3 track4";
+    font-weight: bold;
+    text-align: center;
+    grid-gap: 5px;
+}
+
+.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.transport {
+    grid-area: transport;
+}
+
+.track1 {
+    grid-area: track1;
+    background-color: rgb(154, 180, 60);
+}
+
+.track2 {
+    grid-area: track2;
+    background-color: rgb(139, 167, 63);
+}
+
+.track3 {
+    grid-area: track3;
+    background-color: rgb(240, 192, 63);
+}
+
+.track4 {
+    grid-area: track4;
+    background-color: rgb(160, 19, 19);
+}
+
+.example-box {
+    padding: 20px 10px;
+    border-bottom: solid 1px #ccc;
+    color: rgba(0, 0, 0, 0.87);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    cursor: move;
+    background: white;
+    font-size: 14px;
+}
