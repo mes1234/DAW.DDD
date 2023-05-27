@@ -4,28 +4,28 @@
         <div cdkDropList #track1ClipsList="cdkDropList" [cdkDropListData]="track1Clips"
             [cdkDropListConnectedTo]="[track2ClipsList,track3ClipsList,track4ClipsList]" class="example-list"
             (cdkDropListDropped)="drop($event)">
-            <div class="example-box" *ngFor="let movie of track1Clips" cdkDrag>{{movie}}</div>
+            <div class="example-box" *ngFor="let clip of track1Clips" cdkDrag>{{clip}}</div>
         </div>
     </div>
     <div class="track2">
         <div cdkDropList #track2ClipsList="cdkDropList" [cdkDropListData]="track2Clips"
             [cdkDropListConnectedTo]="[track1ClipsList,track3ClipsList,track4ClipsList]" class="example-list"
             (cdkDropListDropped)="drop($event)">
-            <div class="example-box" *ngFor="let movie of track2Clips" cdkDrag>{{movie}}</div>
+            <div class="example-box" *ngFor="let clip of track2Clips" cdkDrag>{{clip}}</div>
         </div>
     </div>
     <div class="track3">
         <div cdkDropList #track3ClipsList="cdkDropList" [cdkDropListData]="track3Clips"
             [cdkDropListConnectedTo]="[track1ClipsList,track2ClipsList,track4ClipsList]" class="example-list"
             (cdkDropListDropped)="drop($event)">
-            <div class="example-box" *ngFor="let movie of track3Clips" cdkDrag>{{movie}}</div>
+            <div class="example-box" *ngFor="let clip of track3Clips" cdkDrag>{{clip}}</div>
         </div>
     </div>
     <div class="track4">
         <div cdkDropList #track4ClipsList="cdkDropList" [cdkDropListData]="track4Clips"
             [cdkDropListConnectedTo]="[track1ClipsList,track2ClipsList,track3ClipsList]" class="example-list"
             (cdkDropListDropped)="drop($event)">
-            <div class="example-box" *ngFor="let movie of track4Clips" cdkDrag>{{movie}}</div>
+            <div class="example-box" *ngFor="let clip of track4Clips" cdkDrag>{{clip}}</div>
         </div>
     </div>
 </div>
