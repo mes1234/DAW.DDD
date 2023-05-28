@@ -1,11 +1,11 @@
 .arrangement {
     background-color: crimson;
     display: grid;
-    grid-template-columns: 25fr 25fr 25fr 25fr;
+    grid-template-columns: 100fr;
     grid-template-rows: 25fr 75fr;
     grid-template-areas:
-        "transport transport  transport transport"
-        "track1 track2 track3 track4";
+        "transport"
+        "tracks";
     font-weight: bold;
     text-align: center;
     grid-gap: 5px;
@@ -21,6 +21,19 @@
 
 .transport {
     grid-area: transport;
+}
+
+.tracks {
+    background-color: crimson;
+    display: grid;
+    grid-template-columns: 25fr 25fr 25fr 25fr;
+    grid-template-rows: 100fr;
+    grid-template-areas:
+        "track1 track2 track3 track4";
+    font-weight: bold;
+    text-align: center;
+    grid-gap: 5px;
+    grid-area: tracks;
 }
 
 .track1 {
