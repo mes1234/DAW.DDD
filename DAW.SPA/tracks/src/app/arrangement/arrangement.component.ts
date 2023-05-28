@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, CdkDropList, CdkDrag, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Track } from "../models/track";
+import { Clip } from "../models/clip";
 
 @Component({
   selector: 'app-arrangement',
@@ -8,44 +10,47 @@ import { CdkDragDrop, CdkDropList, CdkDrag, transferArrayItem, moveItemInArray }
 })
 export class ArrangementComponent implements OnInit {
 
-  constructor() { }
+  Tracks: Track[] = [];
 
-  ngOnInit(): void {
+  constructor() {
   }
 
-  track1Clips = [
-    'T1 Clip1',
-    'T1 Clip2',
-    'T1 Clip3',
-    'T1 Clip4',
-  ];
+  ngOnInit(): void {
 
-  track2Clips = [
-    'T2 Clip5',
-    'T2 Clip6',
-    'T2 Clip7',
-    'T2 Clip8',
-  ];
+    this.Tracks.push(
+      new Track(1, [
+        new Clip('T1 Clip1'),
+        new Clip('T1 Clip2'),
+        new Clip('T1 Clip3'),
+        new Clip('T1 Clip4'),
+      ]));
 
-  track3Clips = [
-    'Clip9',
-    'Clip10',
-    'Clip11',
-    'Clip12',
-  ];
+    this.Tracks.push(
+      new Track(2, [
+        new Clip('T2 Clip1'),
+        new Clip('T2 Clip2'),
+        new Clip('T2 Clip3'),
+        new Clip('T2 Clip4'),
+      ]));
 
-  track4Clips = [
-    'Clip13',
-    'Clip14',
-    'Clip15',
-    'Clip16',
-  ];
+    this.Tracks.push(
+      new Track(3, [
+        new Clip('T3 Clip1'),
+        new Clip('T3 Clip2'),
+        new Clip('T3 Clip3'),
+        new Clip('T3 Clip4'),
+      ]));
 
-  // drop(event: CdkDragDrop<string[]>) {
-  //   moveItemInArray(this.track1Clips, event.previousIndex, event.currentIndex);
-  // }
+    this.Tracks.push(
+      new Track(4, [
+        new Clip('T4 Clip1'),
+        new Clip('T4 Clip2'),
+        new Clip('T4 Clip3'),
+        new Clip('T4 Clip4'),
+      ]));
+  }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<Clip[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
