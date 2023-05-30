@@ -17,11 +17,13 @@ export class NotePosition {
     public Y: number;
     public Width: number;
     public Height: number;
+    public Id: string
 
-    constructor(x: number, y: number, width: number, height: number) {
+    constructor(id: string, x: number, y: number, width: number, height: number) {
         this.X = x;
         this.Y = y;
         this.Width = width;
         this.Height = height;
+        this.Id = id;
     }
 }

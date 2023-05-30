@@ -39,7 +39,7 @@ export class PianorollComponent implements OnInit {
     result = []
 
     for (var note of this.Notes) {
-      var position = new NotePosition(note.Start * msToPx, this.height - note.Pitch * dh, note.Lenght * msToPx, dh - 2 * this.borderOffset)
+      var position = new NotePosition(`${note.Pitch}.${note.Start}`, note.Start * msToPx, this.height - note.Pitch * dh, note.Lenght * msToPx, dh - 2 * this.borderOffset)
       result.push(position);
     }
     return result;

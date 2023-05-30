@@ -2,6 +2,6 @@
 
 
     <!-- <rect cdkDrag [attr.x]="0" [attr.y]="0" [attr.width]="200" [attr.height]="100" rx="4" /> -->
-    <rect (cdkDragEnded)="dragEnd($event)" cdkDrag [attr.x]="note.X" [attr.y]="note.Y" [attr.width]="note.Width"
-        [attr.height]="note.Height" rx="4" *ngFor="let note of NotesPositions" />
+    <rect [id]="note.Id" (cdkDragEnded)="dragEnd($event)" cdkDrag [attr.x]="note.X" [attr.y]="note.Y"
+        [attr.width]="note.Width" [attr.height]="note.Height" rx="4" *ngFor="let note of NotesPositions" />
 </svg>
