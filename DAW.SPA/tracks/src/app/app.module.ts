@@ -13,13 +13,15 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SoundDesignComponent } from './sound-design/sound-design.component';
 import { PadsComponent } from './pads/pads.component';
 import { ArrangementComponent } from './arrangement/arrangement.component';
+import { PianorollComponent } from './pianoroll/pianoroll.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SoundDesignComponent,
     PadsComponent,
-    ArrangementComponent
+    ArrangementComponent,
+    PianorollComponent
   ],
   imports: [
     BrowserModule,
