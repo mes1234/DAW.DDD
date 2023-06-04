@@ -16,8 +16,8 @@ export class PianorollComponent implements OnInit {
   quantization: number = 8;
 
   width: number = 1550;
-  height: number = 250;
-  borderOffset: number = 2;
+  height: number = 300;
+  borderOffset: number = 1;
 
   className: string = "note"
 
