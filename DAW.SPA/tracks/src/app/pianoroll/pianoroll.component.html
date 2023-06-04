@@ -1,17 +1,19 @@
-<!-- <svg [attr.width]="width" [attr.height]="height" class="pianoroll">
-    <g *ngFor="let note of NotesPositions">
-        <rect [id]="note.Id" (cdkDragEnded)="dragEnd($event)" cdkDrag [attr.x]="note.X" [attr.y]="note.Y"
-            [attr.width]="note.Width" [attr.height]="note.Height" rx="4" />
-    </g>
-
-
-
-</svg> -->
-
 <div class="noteContainer" [ngStyle]="{
     'width.px': width,
     'height.px': height 
    }">
+    <svg [attr.width]="width" [attr.height]="height" class="pianoroll">
+        <line x1="0" [attr.y1]="line" [attr.y2]="line" [attr.x2]="width" stroke="black" *ngFor="let line of Lines" />
+
+        <line [attr.x1]="quant" [attr.y1]="0" [attr.y2]="height" [attr.x2]="quant" stroke="grey"
+            *ngFor="let quant of Quants" />
+        <line [attr.x1]="beat" [attr.y1]="0" [attr.y2]="height" [attr.x2]="beat" stroke="white"
+            *ngFor="let beat of Beats" />
+        <line [attr.x1]="bar" [attr.y1]="0" [attr.y2]="height" [attr.x2]="bar" stroke="black"
+            *ngFor="let bar of Bars" />
+    </svg>
+
+
     <div cdkDrag [ngClass]="[className]" [ngStyle]="{
         'top.px': note.Y,
         'left.px': note.X,
