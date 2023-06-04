@@ -47,7 +47,6 @@ export class ClipPropertiesService {
     return this.BarLenght_ms * this.Bars
   }
 
-
   public get ClipLength_px(): number {
     return this.ClipLength_px * this.MsToPx
   }
@@ -58,6 +57,13 @@ export class ClipPropertiesService {
 
   public get QunatsPerClip(): number {
     return this.Bars * this.BeatsPerBar * this.Quantization;
+  }
+
+  public SnapToQuant(position_px: number): number {
+    const quantIntervalPx = this.QuantLenght_px;
+
+    return position_px - (position_px % quantIntervalPx);
+
   }
 
 }

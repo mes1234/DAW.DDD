@@ -13,9 +13,9 @@ export class PianorollComponent implements OnInit {
   bars: number = 4;
   bpm: number = 100;
   beatsPerBar: number = 4;
-  quantization: number = 16;
+  quantization: number = 8;
 
-  width: number = 850;
+  width: number = 1550;
   height: number = 250;
   borderOffset: number = 2;
 
@@ -127,11 +127,10 @@ export class PianorollComponent implements OnInit {
 
       element.style.backgroundColor = 'lime';
       let roundedY = this.height - (pitchNew - 1) * dh - dh + 2 * this.borderOffset
-      let roundedX = parseFloat(element.style.left) + $event.distance.x;
+      let roundedX = this.clipLenghtService.SnapToQuant(parseFloat(element.style.left) + $event.distance.x);
       element.style.top = `${roundedY}px`;
       element.style.left = `${roundedX}px`;
     }
     $event.source._dragRef.reset();
-    console.log("yello");
   }
 }
