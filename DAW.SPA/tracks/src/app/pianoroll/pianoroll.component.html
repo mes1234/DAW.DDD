@@ -2,7 +2,7 @@
     'width.px': width,
     'height.px': height 
    }">
-    <svg [attr.width]="width" [attr.height]="height" class="pianoroll">
+    <svg [attr.width]="width" [attr.height]="height" class="pianoroll" (dblclick)="doubleClick($event)">
         <line x1="0" [attr.y1]="line" [attr.y2]="line" [attr.x2]="width" stroke="black" *ngFor="let line of Lines" />
 
         <line [attr.x1]="quant" [attr.y1]="0" [attr.y2]="height" [attr.x2]="quant" stroke="grey"
@@ -15,13 +15,13 @@
 
 
     <div cdkDrag [ngClass]="[className]" [ngStyle]="{
-        'top.px': note.Y,
-        'left.px': note.X,
-        'width.px': note.Width,
-        'height.px': note.Height,
+        'top.px': note.value.Y,
+        'left.px': note.value.X,
+        'width.px': note.value.Width,
+        'height.px': note.value.Height,
         'border': '0.5px solid #dcdcdc',
         'background-color': '#2d2738' 
-       }" [id]="note.Id" (cdkDragEnded)="dragEnd($event)" *ngFor="let note of NotesPositions">
+       }" [id]="note.key" (cdkDragEnded)="dragEnd($event)" *ngFor="let note of NotesPositions | keyvalue">
         <div class="example-handle" cdkDragHandle>yello</div>
     </div>
 </div>

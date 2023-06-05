@@ -15,15 +15,15 @@ export class PianorollComponent implements OnInit {
   beatsPerBar: number = 4;
   quantization: number = 8;
 
-  width: number = 1550;
+  width: number = 1050;
   height: number = 300;
   borderOffset: number = 1;
 
   className: string = "note"
 
-  Notes: Note[] = [];
+  Notes: Map<number, Note> = new Map<number, Note>();
   Lines: number[] = [];
-  NotesPositions: NotePosition[] = [];
+  NotesPositions: Map<number, NotePosition> = new Map<number, NotePosition>();
   Bars: number[] = [];
   Quants: number[] = [];
   Beats: number[] = [];
@@ -40,7 +40,7 @@ export class PianorollComponent implements OnInit {
 
   ngOnInit(): void {
     for (let i = 0; i < 16; i++) {
-      this.Notes.push(new Note(100, i * 150, 100, i + 1));
+      this.Notes.set(i, new Note(100, i * 150, 1000, i + 1));
     }
 
     this.NotesPositions = this.calculateNotesPosition();
@@ -50,17 +50,20 @@ export class PianorollComponent implements OnInit {
     this.Beats = this.calculateBeatsPosition();
   }
 
-  calculateNotesPosition(): NotePosition[] {
-    let result: NotePosition[] = []
+  calculateNotesPosition(): Map<number, NotePosition> {
+    let result: Map<number, NotePosition> = new Map<number, NotePosition>();
 
     let dh = this.clipLenghtService.NoteHeight_px;
     let msToPx = this.clipLenghtService.MsToPx;
 
-    for (var note of this.Notes) {
+    this.NotesPositions.values
+
+    this.Notes.forEach((note: Note, key: number) => {
       var noteH = dh;
       var position = new NotePosition(`${note.Pitch}.${note.Start}`, note.Start * msToPx, this.height - (note.Pitch - 1) * dh - noteH + 2 * this.borderOffset, note.Lenght * msToPx, noteH - 5 * this.borderOffset)
-      result.push(position);
-    }
+      result.set(key, position);
+    });
+
     return result;
   }
 
@@ -106,6 +109,23 @@ export class PianorollComponent implements OnInit {
   }
 
 
+  doubleClick($event: MouseEvent) {
+
+    let dh = this.clipLenghtService.NoteHeight_px;
+
+    let x = $event.offsetX;
+    let y = $event.offsetY;
+
+    let pitchBase = Math.floor((this.height - y + dh + 2 * this.borderOffset) / dh - 1) + 1;
+    let positionBase = this.clipLenghtService.SnapToQuant(x) / this.clipLenghtService.MsToPx;
+
+    let siezeOfNotes = this.Notes.size;
+
+    this.Notes.set(siezeOfNotes + 1, new Note(127, positionBase, this.clipLenghtService.QuantLenght_ms, pitchBase));
+
+    this.NotesPositions = this.calculateNotesPosition();
+  }
+
   dragEnd($event: CdkDragEnd) {
 
     let idOfElement = $event.source.element.nativeElement.id;
@@ -130,7 +150,15 @@ export class PianorollComponent implements OnInit {
       let roundedX = this.clipLenghtService.SnapToQuant(parseFloat(element.style.left) + $event.distance.x);
       element.style.top = `${roundedY}px`;
       element.style.left = `${roundedX}px`;
+
+
+      let currentNote = this.Notes.get(parseInt(idOfElement));
+
+      this.Notes.set(parseInt(idOfElement), new Note(currentNote?.Velocity!, roundedX / this.clipLenghtService.MsToPx, currentNote?.Lenght!, pitchNew));
+
+      this.NotesPositions = this.calculateNotesPosition();
     }
+
     $event.source._dragRef.reset();
   }
 }
