@@ -28,6 +28,18 @@ public static class Program
         // Add services to the container.
         //builder.Services.AddAuthorization();
 
+        var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: MyAllowSpecificOrigins,
+                              policy =>
+                              {
+                                  policy.WithOrigins("http://localhost:4200");
+                              });
+        });
+
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddTransient<INotificationPublisher, NotificationPublisher>();
@@ -86,6 +98,8 @@ public static class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseCors(MyAllowSpecificOrigins);
 
         //app.UseAuthorization();
 

@@ -3,7 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiAddress: "https://localhost:7267" ///sounds/005f938b-e24a-4111-8055-e070ae22ee79/1
 };
 
 /*
